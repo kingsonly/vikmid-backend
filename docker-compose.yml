@@ -1,0 +1,65 @@
+version: '3.2'
+
+services:
+  vickmid:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 4000:4000
+    command: npm run start:dev
+    volumes:
+      # Re-use local composer cache via host-volume
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - mysql
+    networks:
+      - vikmid-backend
+    env_file:
+      - .env
+
+  # mongo:
+  #   image: mongo:latest
+  #   container_name: 'mongodb'
+  #   volumes:
+  #     - mongodb_data_container:/data/db
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - MONGO_INITDB_DATABASE=${MONGO_DATEBASE}
+  #     - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+  #     - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+  #   ports:
+  #     - ${MONGO_PORT}:${MONGO_PORT}
+  #   networks:
+  #     - vikmid-backend
+  mysql:
+    image: mariadb:10.5.8
+    environment:
+      - MYSQL_ROOT_PASSWORD=Ubuxa##99
+      - MYSQL_DATABASE=forge
+      - MYSQL_USER=forge
+      - MYSQL_PASSWORD=Ubuxa##99
+    networks:
+      - vikmid-backend
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    ports:
+      - 1080:80
+    environment:
+      - PMA_HOST=mysql
+      - PMA_PASSWORD=Ubuxa##99
+    restart: unless-stopped
+    volumes:
+      # Re-use local composer cache via host-volume
+      #- ~/.composer-docker/cache:/root/.composer/cache:delegated
+      # Mount source-code for development
+      - ./:/app
+    networks:
+      - vikmid-backend
+
+networks:
+  vikmid-backend:
+    driver: bridge
