@@ -67,8 +67,8 @@ jobs:
           sed -i -e "s|DB_HOST=.*|DB_HOST=${{ secrets.DB_HOST }}|" .env
           sed -i -e "s|DB_PORT=.*|DB_PORT=${{ secrets.DB_PORT }}|" .env
           sed -i -e "s|DB_USER=.*|DB_USER=${{ secrets.DB_USER }}|" .env
-          sed -i -e "s|DB_PASSWORD=.*|DB_PASSWORD=${{ secrets.DB_PASSWORD }}|" .env
-          sed -i -e "s|DB_NAME=.*|DB_NAME='${{ secrets.DB_NAME }}'|" .env
+          sed -i -e "s|DB_PASSWORD=.*|DB_PASSWORD='${{ secrets.DB_PASSWORD }}'|" .env
+          sed -i -e "s|DB_NAME=.*|DB_NAME=${{ secrets.DB_NAME }}|" .env
 
       - name: Install rsync
         run: sudo apt-get install -y rsync
