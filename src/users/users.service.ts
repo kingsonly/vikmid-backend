@@ -14,6 +14,12 @@ export class UsersService {
         return this.usersRepository.findOne({ where: { email } });
     }
 
+    findOneById(id: number): Promise<User | undefined> {
+        return this.usersRepository.findOne({
+            where: { id }
+        })
+    }
+
     async create(user: Partial<User>) {
         const newUser = this.usersRepository.create(user);
         return this.usersRepository.save(newUser);

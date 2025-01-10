@@ -17,17 +17,17 @@ import { WaitlistModule } from './waitlist/waitlist.module';
       isGlobal: true, // Makes the ConfigModule globally available
     }),
     TypeOrmModule.forRoot({
-      type: 'mysql', // or your chosen database
-      host: 'mysql',
-      port: 3306,
-      username: 'root',
+      type: 'mariadb', // or your chosen database
+      host: 'localhost',
+      port: 3308,
+      username: 'forge',
       password: 'Ubuxa##99',
       database: 'forge',
       autoLoadEntities: true,
       synchronize: true,
     }),
     PlansModule,
-    WaitlistModule,
+    WaitlistModule
   ],
   controllers: [AppController],
   providers: [AppService],
