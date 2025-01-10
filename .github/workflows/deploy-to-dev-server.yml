@@ -79,7 +79,7 @@ jobs:
           echo "${{secrets.SSH_PRIVATE_KEY}}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           rsync --delete -va -e 'ssh -p 7822 -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no' \
-            dist/ package.json  .env .htaccess skillz@103.72.76.68:vikmid/api
+            dist/ package.json  .env  skillz@103.72.76.68:vikmid/api
       - name: SSH and effect migration
         run: |
           ssh -p 7822 -i ~/.ssh/id_rsa -t skillz@103.72.76.68 "cd vikmid/api && npm i"
