@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import config from 'config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -6,7 +7,6 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { PlansModule } from './plans/plans.module';
-import { WaitlistController } from './waitlist/waitlist.controller';
 import { WaitlistModule } from './waitlist/waitlist.module';
 
 @Module({
@@ -18,11 +18,7 @@ import { WaitlistModule } from './waitlist/waitlist.module';
     }),
     TypeOrmModule.forRoot({
       type: 'mysql', // or your chosen database
-      host: 'mysql',
-      port: 3306,
-      username: 'root',
-      password: 'Ubuxa##99',
-      database: 'forge',
+      ...config.db,
       autoLoadEntities: true,
       synchronize: true,
     }),
@@ -32,6 +28,4 @@ import { WaitlistModule } from './waitlist/waitlist.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
-
-
+export class AppModule {}
