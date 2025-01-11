@@ -19,11 +19,7 @@ import { ProductsModule } from './products/products.module';
     }),
     TypeOrmModule.forRoot({
       type: 'mysql', // or your chosen database
-      host: config.db.host,
-      port: Number(config.db.port),
-      username: config.db.username,
-      password: config.db.password,
-      database: config.db.database,
+      ...config.db,
       autoLoadEntities: true,
       synchronize: true,
     }),
