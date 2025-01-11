@@ -1,0 +1,18 @@
+services:
+
+  db:
+    image: mariadb:latest
+    restart: always
+    environment:
+      - MARIADB_ROOT_PASSWORD=Ubuxa##99
+      - MARIADB_DATABASE=forge
+      - MARIADB_USER=forge
+      - MARIADB_PASSWORD=Ubuxa##99
+    ports:
+      - 3310:3306
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
