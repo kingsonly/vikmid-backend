@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PlansModule } from './plans/plans.module';
 import { WaitlistController } from './waitlist/waitlist.controller';
 import { WaitlistModule } from './waitlist/waitlist.module';
+import { CourseModule } from './course/course.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { WaitlistModule } from './waitlist/waitlist.module';
       synchronize: true,
     }),
     PlansModule,
-    WaitlistModule
+    WaitlistModule,
+    CourseModule
   ],
   controllers: [AppController],
   providers: [AppService],

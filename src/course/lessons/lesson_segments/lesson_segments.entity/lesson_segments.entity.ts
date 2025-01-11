@@ -6,7 +6,7 @@ export class LessonSegments {
     @PrimaryGeneratedColumn()
         id: number;
     
-        @ManyToOne(() => Lessons, (content) => content.modules)
+        @ManyToOne(() => Lessons, (content) => content.lessonSegments, {eager:true})
         lesson: number;
     
         @Column()
@@ -29,6 +29,9 @@ export class LessonSegments {
     
         @Column()
         freeStatus: boolean;
+
+        @Column()
+        previewable: boolean;
     
         // External Relationship with foreign keys
         // mou_engagements relationship loading...

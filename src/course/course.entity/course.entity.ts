@@ -48,7 +48,7 @@ export class Course {
 
     // External Relationships with foreign keys
     @OneToMany(() => Lessons, (lesson) => lesson.course)
-    contents: Lessons[];
+    lessons: Lessons[];
 
     @OneToMany(() => Enrollments, (enrollment) => enrollment.course)
     enrollments: Enrollments[];

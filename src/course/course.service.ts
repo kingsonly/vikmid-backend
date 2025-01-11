@@ -24,10 +24,13 @@ export class CourseService {
     async findAll(userId: number) {
         const courses = await this.courseRepository.find({
             where: {creator: {id: userId}},
-            relations: ['creator'],
+            relations: ['creator', 'lessons', 'enrollments'],
         });
-    
-        const data = courses;
+
+        if (courses.length === 0) {
+            throw new NotFoundException("There are no courses for this user");
+        }
+
         // Check if creator is being fetched correctly
         return courses.map(course => {
     
@@ -61,23 +64,34 @@ export class CourseService {
         } as Course;
     }
 
-    async findOne(id: number) {
+    async findOne(id: number, userId: number) {
         const course = await this.courseRepository.findOne({
-            where: { id },
-            relations: ['creator'],  // ✅ Make sure to load the relation here too
+            where: { id, creator: {id: userId} },
+            relations: ['creator', 'lessons', 'enrollments'],  
         });
         if (!course) {
-            throw new NotFoundException("Course Not Found");
+            throw new NotFoundException("Course not found for this user");
         }
         return {
             ...course,
-            creatorId: course.creator.id,  // ✅ Extracting only the ID
+            creatorId: course.creator.id,  
         };
+    }
+
+    async findAnyOne(id: number): Promise<Course> {
+        const course = await this.courseRepository.findOne({
+            where: { id },
+            relations: ['creator', 'lessons', 'enrollments'],  
+        });
+        if (!course) {
+            throw new NotFoundException("Course not found");
+        }
+        return course;
     }
 
     async update(courseId: number, courseDto: UpdateCourseDto): Promise<Course> {
          // Find the existing course by ID
-        const course = await this.courseRepository.findOne({ where: { id: courseId }, relations: ['creator'] });
+        const course = await this.courseRepository.findOne({ where: { id: courseId }, relations: ['creator', 'lessons', 'enrollments'] });
         if (!course) {
             throw new NotFoundException('Course not found');
         }
@@ -116,5 +130,12 @@ export class CourseService {
             message: "Course successfully deleted",
             deletedCourse: oldCourse,
         }
+    }
+
+    
+    findOneById(id: number): Promise<Course | undefined> {
+        return this.courseRepository.findOne({
+            where: { id }
+        })
     }
 }

@@ -20,14 +20,21 @@ export class CourseController {
     // Protect this route with the JwtAuthGuard
     @UseGuards(JwtAuthGuard)
     @Get(':id')
-    async findOne(@Param('id', ParseIntPipe) id: number) {
-        return this.courseService.findOne(id);
+    async findOne(@Param('id', ParseIntPipe) id: number, @Request() req) {
+        const userId = req.user.userId;
+        return this.courseService.findOne(id, userId);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('course/:id')
+    async findAnyOne(@Param('id', ParseIntPipe) id: number) {
+        return this.courseService.findAnyOne(id);
     }
 
     // Protect this route with the JwtAuthGuard
     @UseGuards(JwtAuthGuard)
     @Post()
-    async create(@Body() course: CreateCourseDto) {
+    async create(@Body(ValidationPipe) course: CreateCourseDto) {
         return this.courseService.create(course);
     }
 

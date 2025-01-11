@@ -7,8 +7,8 @@ export class Lessons {
     // The columns of the contents table
         @PrimaryGeneratedColumn()
         id: number;
-    
-        @ManyToOne(() => Course, (course) => course.contents)
+     
+        @ManyToOne(() => Course, (course) => course.lessons, {eager: true})
         course: Course;
     
         @Column()
@@ -31,7 +31,7 @@ export class Lessons {
     
         // External relationship with foreign keys
         @OneToMany(() => LessonSegments, (lesson_segment) => lesson_segment.lesson)
-        modules: LessonSegments[];
+        lessonSegments: LessonSegments[];
         // Student progress relationship loading...
         constructor(lessons: Partial<Lessons>) {
             Object.assign(this, lessons)
