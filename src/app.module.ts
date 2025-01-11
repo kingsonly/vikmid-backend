@@ -7,7 +7,6 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { PlansModule } from './plans/plans.module';
-import { WaitlistController } from './waitlist/waitlist.controller';
 import { WaitlistModule } from './waitlist/waitlist.module';
 
 @Module({
@@ -19,11 +18,7 @@ import { WaitlistModule } from './waitlist/waitlist.module';
     }),
     TypeOrmModule.forRoot({
       type: 'mysql', // or your chosen database
-      host: config.db.host,
-      port: Number(config.db.port),
-      username: config.db.username,
-      password: config.db.password,
-      database: config.db.database,
+      ...config.db,
       autoLoadEntities: true,
       synchronize: true,
     }),
@@ -33,6 +28,4 @@ import { WaitlistModule } from './waitlist/waitlist.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
-
-
+export class AppModule {}
