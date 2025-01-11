@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import config from 'config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -18,11 +19,11 @@ import { WaitlistModule } from './waitlist/waitlist.module';
     }),
     TypeOrmModule.forRoot({
       type: 'mysql', // or your chosen database
-      host: 'mysql',
-      port: 3306,
-      username: 'root',
-      password: 'Ubuxa##99',
-      database: 'forge',
+      host: config.db.host,
+      port: Number(config.db.port),
+      username: config.db.username,
+      password: config.db.password,
+      database: config.db.database,
       autoLoadEntities: true,
       synchronize: true,
     }),
