@@ -9,26 +9,33 @@ export class CourseController {
 
     constructor(private readonly courseService: CourseService) {}
 
+
+    @UseGuards(JwtAuthGuard)
+    @Get('guest')
+    async findAll() {
+        return this.courseService.findAll(); // Pass the userId to the service
+    }
+
     // Protect this route with the JwtAuthGuard
     @UseGuards(JwtAuthGuard)
-    @Get()
-    async findAll(@Request() req) { // Using @Request to access the decoded token
+    @Get('user')
+    async findAllByUser(@Request() req) { // Using @Request to access the decoded token
         const userId = req.user.userId;  // Extract user ID from the token payload
-        return this.courseService.findAll(userId); // Pass the userId to the service
+        return this.courseService.findAllByUser(userId); // Pass the userId to the service
     }
 
     // Protect this route with the JwtAuthGuard
     @UseGuards(JwtAuthGuard)
-    @Get(':id')
-    async findOne(@Param('id', ParseIntPipe) id: number, @Request() req) {
+    @Get(':courseId')
+    async findOne(@Param('courseId', ParseIntPipe) courseId: number, @Request() req) {
         const userId = req.user.userId;
-        return this.courseService.findOne(id, userId);
+        return this.courseService.findOne(courseId, userId);
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get('course/:id')
-    async findAnyOne(@Param('id', ParseIntPipe) id: number) {
-        return this.courseService.findAnyOne(id);
+    @Get('course/:courseId')
+    async findAnyOne(@Param('courseId', ParseIntPipe) courseId: number) {
+        return this.courseService.findAnyOne(courseId);
     }
 
     // Protect this route with the JwtAuthGuard
@@ -39,14 +46,14 @@ export class CourseController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Patch(':id')
-    async update(@Param('id', ParseIntPipe) id: number, @Body(ValidationPipe) courseDto: UpdateCourseDto) {
-        return this.courseService.update(id, courseDto);
+    @Patch(':courseId')
+    async update(@Param('courseId', ParseIntPipe) courseId: number, @Body(ValidationPipe) courseDto: UpdateCourseDto) {
+        return this.courseService.update(courseId, courseDto);
     }
 
     @UseGuards(JwtAuthGuard)
-    @Delete(':id')
-    async remove(@Param('id', ParseIntPipe) id: number) {
-        return this.courseService.remove(id);
+    @Delete(':courseId')
+    async remove(@Param('courseId', ParseIntPipe) courseId: number) {
+        return this.courseService.remove(courseId);
     }
 }

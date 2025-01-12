@@ -11,6 +11,7 @@ import { LessonsModule } from '../lessons.module';
     forwardRef(() => LessonsModule)
   ],
   providers: [LessonSegmentsService],
-  controllers: [LessonSegmentsController]
+  controllers: [LessonSegmentsController],
+  exports: [LessonSegmentsService]
 })
 export class LessonSegmentsModule {}

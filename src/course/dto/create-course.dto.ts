@@ -18,11 +18,19 @@ export class CreateCourseDto {
 
     @IsBoolean()
     @IsOptional()
-    withTriller?: boolean;
+    withTrailer?: boolean;
+
+    @IsBoolean()
+    @IsOptional()
+    withDiscount?: boolean;
+    
+    @IsNotEmpty()
+    @IsNumber()
+    discountPrice: number;
 
     @IsOptional()
     @IsString()
-    triller?: string;
+    file?: string;
 
     @IsBoolean()
     @IsOptional()

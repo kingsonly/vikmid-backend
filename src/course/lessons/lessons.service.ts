@@ -82,7 +82,7 @@ export class LessonsService {
         });
     
         // Save the course using the repository instead of the entityManager
-        const savedLesson = await this.entityManager.save(lesson);
+        const savedLesson = await this.lessonRepository.save(lesson);
     
         // Return the saved course with the creatorId included
         return {
@@ -111,7 +111,7 @@ export class LessonsService {
         Object.assign(lesson, lessonDto);
 
         // Save the updated course using the repository
-        const updatedLesson = await this.entityManager.save(lesson);
+        const updatedLesson = await this.lessonRepository.save(lesson);
 
         // Return the updated course with creatorId explicitly included
         return {

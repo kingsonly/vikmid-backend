@@ -9,9 +9,11 @@ import { CourseModule } from '../course.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Enrollments]),
-    forwardRef(() => CourseModule)
+    forwardRef(() => CourseModule),
+    forwardRef(() => UsersModule),
   ],
   providers: [EnrollmentsService],
-  controllers: [EnrollmentsController]
+  controllers: [EnrollmentsController],
+  exports: [EnrollmentsService],
 })
 export class EnrollmentsModule {}

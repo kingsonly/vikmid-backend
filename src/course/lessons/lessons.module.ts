@@ -8,6 +8,7 @@ import { Lessons } from './lessons.entity/lessons.entity';
 import { CourseModule } from '../course.module';
 
 @Module({
+  exports: [LessonsService],
   providers: [LessonsService],
   controllers: [LessonsController],
   imports: [

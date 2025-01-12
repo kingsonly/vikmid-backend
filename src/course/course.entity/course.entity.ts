@@ -32,10 +32,16 @@ export class Course {
     updatedAt: Date;
 
     @Column({ default: false })
-    withTriller: boolean;
+    withTrailer: boolean;
+
+    @Column({ default: false })
+    withDiscount: boolean;
+
+    @Column('decimal')
+    discountPrice: number;
 
     @Column({ nullable: true }) // Nullable in case triller is not provided
-    triller: string;
+    file: string;
 
     @Column({ default: false })
     withBatch: boolean;

@@ -9,10 +9,10 @@ export class Enrollments {
     id: number;
 
     @ManyToOne(() => User, (user) => user.enrollments)
-    student: number;
+    student: User;
 
     @ManyToOne(() => Course, (course) => course.enrollments)
-    course: number;
+    course: Course;
 
     @CreateDateColumn({type: 'timestamp'})
     enrollmentDate: Date;

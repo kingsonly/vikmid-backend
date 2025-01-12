@@ -26,7 +26,7 @@ export class Lessons {
         @UpdateDateColumn({ type: 'timestamp' })
         updatedAt: Date;
     
-        @Column({ nullable: true })
+        @Column({ default: 0 })
         hubId: number;
     
         // External relationship with foreign keys
