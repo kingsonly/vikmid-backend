@@ -10,13 +10,20 @@ export class LessonSegmentsController {
         private readonly lessonSegmentsService: LessonSegmentsService,
     ) {}
 
-    @UseGuards(JwtAuthGuard)
+    // Get all lesson segments by lesson ID
     @Get(':lessonId')
     async findAll(@Param('lessonId', ParseIntPipe) lessonId: number) {
         return this.lessonSegmentsService.findAll(lessonId);
     }
 
-    @UseGuards(JwtAuthGuard)
+     // Get a lesson segment by segment ID only
+     @Get('lessonSegment/:lessonSegmentId')
+     async findAnyOne(@Param('lessonSegmentId', ParseIntPipe) lessonSegmentId: number) {
+         return this.lessonSegmentsService.findAnyOne(lessonSegmentId);
+     }  
+ 
+
+    // Get a specific lesson segment by lesson and segment ID
     @Get(':lessonId/:lessonSegmentId')
     async findOne(
         @Param('lessonId', ParseIntPipe) lessonId: number,
@@ -25,25 +32,22 @@ export class LessonSegmentsController {
         return this.lessonSegmentsService.findOne(lessonId, lessonSegmentId);
     }
 
-    @UseGuards(JwtAuthGuard)
-    @Get('lessonSegment/:lessonSegmentId')
-    async findAnyOne(@Param('lessonSegmentId', ParseIntPipe) lessonSegmentId: number) {
-        return this.lessonSegmentsService.findAnyOne(lessonSegmentId);
-    }  
-
-    @UseGuards(JwtAuthGuard)
+    // Create a new lesson segment
     @Post()
-    async create(@Body(ValidationPipe) lessonSegmentDto: CreateLessonSegmentsDto) {
+    async create(@Body() lessonSegmentDto: CreateLessonSegmentsDto) {
         return this.lessonSegmentsService.create(lessonSegmentDto);
     }
 
-    @UseGuards(JwtAuthGuard)
+    // Update an existing lesson segment by segment ID
     @Patch(':lessonSegmentId')
-    async update(@Param('lessonSegmentId', ParseIntPipe) lessonSegmentId: number, @Body(ValidationPipe) lessonSegmentDto: UpdateLessonSegmentsDto) {
+    async update(
+        @Param('lessonSegmentId', ParseIntPipe) lessonSegmentId: number, 
+        @Body() lessonSegmentDto: UpdateLessonSegmentsDto
+    ) {
         return this.lessonSegmentsService.update(lessonSegmentId, lessonSegmentDto);
     }
 
-    @UseGuards(JwtAuthGuard)
+    // Delete a lesson segment by segment ID
     @Delete(':lessonSegmentId')
     async remove(@Param('lessonSegmentId', ParseIntPipe) lessonSegmentId: number) {
         return this.lessonSegmentsService.remove(lessonSegmentId);

@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
+import config from 'config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PlansModule } from './plans/plans.module';
-import { WaitlistController } from './waitlist/waitlist.controller';
 import { WaitlistModule } from './waitlist/waitlist.module';
 import { CourseModule } from './course/course.module';
 
@@ -24,6 +24,8 @@ import { CourseModule } from './course/course.module';
       username: 'forge',
       password: 'Ubuxa##99',
       database: 'forge',
+      // type: 'mysql', // or your chosen database
+      // ...config.db,
       autoLoadEntities: true,
       synchronize: true,
     }),
@@ -35,5 +37,3 @@ import { CourseModule } from './course/course.module';
   providers: [AppService],
 })
 export class AppModule { }
-
-

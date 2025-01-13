@@ -17,6 +17,12 @@ export class LessonsController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Get('lesson/:lessonId')
+    async findAnyOne(@Param('lessonId', ParseIntPipe) lessonId: number) {
+        return this.lessonsService.findAnyOne(lessonId);
+    }    
+
+    @UseGuards(JwtAuthGuard)
     @Get(':courseId/:lessonId')
     async findOne(
         @Param('courseId', ParseIntPipe) courseId: number,
@@ -24,12 +30,6 @@ export class LessonsController {
     ) {
         return this.lessonsService.findOne(courseId, lessonId);
     }
-
-    @UseGuards(JwtAuthGuard)
-    @Get('lesson/:lessonId')
-    async findAnyOne(@Param('lessonId', ParseIntPipe) lessonId: number) {
-        return this.lessonsService.findAnyOne(lessonId);
-    }    
 
     @UseGuards(JwtAuthGuard)
     @Post()
