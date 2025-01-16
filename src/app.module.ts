@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PlansModule } from './plans/plans.module';
 import { WaitlistModule } from './waitlist/waitlist.module';
+import { CourseModule } from './course/course.module';
 
 @Module({
   imports: [
@@ -17,13 +18,20 @@ import { WaitlistModule } from './waitlist/waitlist.module';
       isGlobal: true, // Makes the ConfigModule globally available
     }),
     TypeOrmModule.forRoot({
-      type: 'mysql', // or your chosen database
-      ...config.db,
+      type: 'mariadb', // or your chosen database
+      host: 'localhost',
+      port: 3308,
+      username: 'forge',
+      password: 'Ubuxa##99',
+      database: 'forge',
+      // type: 'mysql', // or your chosen database
+      // ...config.db,
       autoLoadEntities: true,
       synchronize: true,
     }),
     PlansModule,
     WaitlistModule,
+    CourseModule
   ],
   controllers: [AppController],
   providers: [AppService],
