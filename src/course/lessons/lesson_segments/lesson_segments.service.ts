@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessonSegments } from './lesson_segments.entity/lesson_segments.entity';
 import { LessonsService } from '../lessons.service';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, Not, Repository } from 'typeorm';
 import { CreateLessonSegmentsDto } from './dto/create-lesson_segments.dto';
 import { UpdateLessonSegmentsDto } from './dto/update-lesson_segments.dto';
 
@@ -70,6 +70,15 @@ export class LessonSegmentsService {
         if (!lesson) {
             throw new NotFoundException('Lesson not found');
         }
+
+        // Check if a lesson with the same courseId and order already exists
+        const existingLessonSegment = await this.lessonSegmentsRepository.findOne({
+            where: { lesson: { id: lessonSegmentDto.lessonId }, order: lessonSegmentDto.order }
+        });
+
+        if (existingLessonSegment) {
+            throw new NotFoundException('A lessonSegment with this lessonId and order already exists');
+        }
     
         // Create the lessonSegment entity and assign the lesson relationship
         const lessonSegment = this.lessonSegmentsRepository.create({ 
@@ -83,7 +92,7 @@ export class LessonSegmentsService {
         // Return the saved lesson with the lessonId included
         return {
             ...savedLessonSegment,
-            lessonId: savedLessonSegment.lesson.id
+            lessonId: savedLessonSegment.lesson.id     
         } as LessonSegments;
     }
 
@@ -92,6 +101,24 @@ export class LessonSegmentsService {
         const lessonSegment = await this.lessonSegmentsRepository.findOne({ where: { id: lessonSegmentId }, relations: ['lesson'] });
         if (!lessonSegment) {
             throw new NotFoundException('Lesson segment not found');
+        }
+
+        // Check if the lessonDto has a payload
+        if (!lessonSegmentDto || !lessonSegmentDto.lessonId) {
+            throw new BadRequestException('Invalid or missing payload data.');
+        }
+        
+        const conflictingLessonSegment = await this.lessonSegmentsRepository.findOne({
+            where: {
+                lesson: { id: lessonSegmentDto.lessonId },
+                order: lessonSegmentDto.order,
+                id: Not(lessonSegmentId)
+            }
+        });
+
+        // Check if the updated order and courseId already exist for another lesson
+        if (conflictingLessonSegment) {
+            throw new NotFoundException('Another lessonSegment with this order already exists for this lesson');
         }
 
         // If the lessonId is provided and needs to be updated
@@ -126,8 +153,51 @@ export class LessonSegmentsService {
         await this.lessonSegmentsRepository.delete(lessonSegmentId);
         return {
             message: "Course successfully deleted",
-            deletedCourse: oldLessonSegment,
+            deletedSegment: oldLessonSegment,
         }
+    }
+
+    async updateOrders(updateOrdersDto: { lessonSegmentId: number; lessonId: number; order: number }[]) {
+        const updatedSegments: LessonSegments[] = [];
+
+        for (const { lessonSegmentId, lessonId, order } of updateOrdersDto) {
+            const lessonSegment = await this.lessonSegmentsRepository.findOne({
+                where: { id: lessonSegmentId }
+            });
+
+            if (!lessonSegment) {
+                throw new NotFoundException(`Lesson segment with ID ${lessonSegmentId} not found`);
+            }
+
+            // Validate if the lesson exists
+            const lesson = await this.lessonsService.findOneById(lessonId);
+            if (!lesson) {
+                throw new NotFoundException(`Lesson with ID ${lessonId} not found`);
+            }
+
+            // // Check for conflicts with the same order and lessonId
+            // const conflictingSegment = await this.lessonSegmentsRepository.findOne({
+            //     where: {
+            //         lesson: { id: lessonId },
+            //         order: order,
+            //         id: Not(lessonSegmentId)
+            //     }
+            // });
+
+            // if (conflictingSegment) {
+            //     throw new ConflictException(`Conflict: Another segment already has order ${order} for lesson ID ${lessonId}`);
+            // }
+
+            // Update order and lesson ID
+            lessonSegment.order = order;
+            lessonSegment.lesson = lesson;
+
+            // Save the updated segment and push it to the results array
+            const updatedSegment = await this.lessonSegmentsRepository.save(lessonSegment);
+            updatedSegments.push(updatedSegment);
+        }
+
+        return updatedSegments;
     }
 
     findOneById(id: number): Promise<LessonSegments | undefined> {

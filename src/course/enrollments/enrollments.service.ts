@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Enrollments } from './enrollments.entity/enrollments.entity';
 import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -104,7 +104,21 @@ export class EnrollmentsService {
     }
 
     async create(enrollmentDto: CreateEnrollmentsDto): Promise<Enrollments> {
-        // Fetch the user based on the provided creatorId
+        // Check if the enrollment already exists for the given studentId and courseId
+        const existingEnrollment = await this.enrollmentsRepository.findOne({
+            where: {
+                student: { id: enrollmentDto.studentId },
+                course: { id: enrollmentDto.courseId },
+            },
+            relations: ['student', 'course'],
+        });
+
+        if (existingEnrollment) {
+            throw new ConflictException('Enrollment already exists for this student and course');
+        }
+
+
+        // Fetch the user based on the provided studentId
         const user = await this.userService.findOneById(enrollmentDto.studentId);
         if (!user) {
             throw new NotFoundException('User not found');
@@ -141,6 +155,22 @@ export class EnrollmentsService {
         });
         if (!enrollment) {
             throw new NotFoundException('Enrollment not found');
+        }
+
+        // Check for duplicate studentId and courseId during the update
+        if (enrollmentDto.studentId && enrollmentDto.courseId) {
+            const duplicateEnrollment = await this.enrollmentsRepository.findOne({
+                where: {
+                    student: { id: enrollmentDto.studentId },
+                    course: { id: enrollmentDto.courseId },
+                },
+                relations: ['student', 'course'],
+            });
+            if (duplicateEnrollment && duplicateEnrollment.id !== enrollmentId) {
+                throw new ConflictException('Another enrollment already exists for this student and course');
+            }
+        } else {
+            throw new BadRequestException('Invalid or missing payload data.');
         }
 
         // If the creatorId is provided and needs to be updated
@@ -184,7 +214,7 @@ export class EnrollmentsService {
     
         await this.enrollmentsRepository.delete(enrollmentId);
         return {
-            message: "Course successfully deleted",
+            message: "Enrollment successfully deleted",
             deletedCourse: oldEnrollment,
         }
     }

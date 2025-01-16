@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from './course.entity/course.entity';
 import { EntityManager, Repository } from 'typeorm';
@@ -22,6 +22,24 @@ export class CourseService {
     ) {}
 
     async findAll() {
+        const courses = await this.courseRepository.find({
+            relations: ['creator', 'lessons', 'enrollments'],
+        });
+
+        if (courses.length === 0) {
+            throw new NotFoundException("There are no courses for this user");
+        }
+
+        // Check if creator is being fetched correctly
+        return courses.map(course => {
+    
+            return {
+                ...course,
+            };
+        });
+    }
+
+    async findAllForUser() {
         const courses = await this.courseRepository.find({
             relations: ['creator', 'lessons', 'enrollments'],
         });
@@ -108,8 +126,12 @@ export class CourseService {
     }
 
     async update(courseId: number, courseDto: UpdateCourseDto): Promise<Course> {
-         // Find the existing course by ID
-        const course = await this.courseRepository.findOne({ where: { id: courseId }, relations: ['creator', 'lessons', 'enrollments'] });
+        if (!courseDto || !courseDto.creatorId) {
+            throw new ConflictException("Invalid or missing payload data")
+        }
+
+        // Find the existing course by ID
+        const course = await this.courseRepository.findOne({ where: { id: courseId, creator: {id: courseDto.creatorId} }, relations: ['creator', 'lessons', 'enrollments'] });
         if (!course) {
             throw new NotFoundException('Course not found');
         }

@@ -1,34 +1,39 @@
+import { ApiProperty } from "@nestjs/swagger";
 import { Course } from "src/course/course.entity/course.entity";
 import { User } from "src/users/user.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Enrollments {
-    // The columns for the enrollment table
+    @ApiProperty({ description: 'Unique identifier for the enrollment' })
     @PrimaryGeneratedColumn()
     id: number;
 
+    @ApiProperty({ description: 'Student associated with the enrollment', type: () => User })
     @ManyToOne(() => User, (user) => user.enrollments)
+    @JoinColumn()
     student: User;
 
+    @ApiProperty({ description: 'Course associated with the enrollment', type: () => Course })
     @ManyToOne(() => Course, (course) => course.enrollments)
+    // @JoinColumn()
     course: Course;
 
-    @CreateDateColumn({type: 'timestamp'})
+    @ApiProperty({ description: 'Date of enrollment' })
+    @CreateDateColumn({ type: 'timestamp' })
     enrollmentDate: Date;
 
+    @ApiProperty({ description: 'Status of the enrollment' })
     @Column()
     status: string;
 
-    @CreateDateColumn()
+    @ApiProperty({ description: 'Date when the enrollment was created' })
+    @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date;
 
-    @Column({nullable: true})
+    @ApiProperty({ description: 'Hub ID associated with the enrollment', required: false })
+    @Column({ nullable: true })
     hubId: number;
-
-    // External Relationship with foreign keys
-    // @ManyToOne(() => Batches, (batch) => batch.enrollments)
-    // batch: number;
 
     constructor(enrollments: Partial<Enrollments>) {
         Object.assign(this, enrollments)

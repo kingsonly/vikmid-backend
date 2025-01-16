@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CourseService } from '../course.service';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, Not, Repository } from 'typeorm';
 import { Lessons } from './lessons.entity/lessons.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateLessonsDto } from './dto/create-lessons.dto';
@@ -74,6 +74,15 @@ export class LessonsService {
         if (!course) {
             throw new NotFoundException('Course not found');
         }
+
+        // Check if a lesson with the same courseId and order already exists
+        const existingLesson = await this.lessonRepository.findOne({
+            where: { course: { id: lessonDto.courseId }, order: lessonDto.order }
+        });
+
+        if (existingLesson) {
+            throw new NotFoundException('A lesson with this courseId and order already exists');
+        }
     
         // Create the course entity and assign the creator relationship
         const lesson = this.lessonRepository.create({ 
@@ -96,6 +105,24 @@ export class LessonsService {
         const lesson = await this.lessonRepository.findOne({ where: { id: lessonId }, relations: ['course', 'lessonSegments'] });
         if (!lesson) {
             throw new NotFoundException('Lesson not found');
+        }
+
+        // Check if the lessonDto has a payload
+        if (!lessonDto || !lessonDto.courseId) {
+            throw new BadRequestException('Invalid or missing payload data.');
+        }
+        
+        const conflictingLesson = await this.lessonRepository.findOne({
+            where: {
+                course: { id: lessonDto.courseId },
+                order: lessonDto.order,
+                id: Not(lessonId)
+            }
+        });
+
+        // Check if the updated order and courseId already exist for another lesson
+        if (conflictingLesson) {
+            throw new NotFoundException('Another lesson with this order already exists for this cours');
         }
 
         // If the creatorId is provided and needs to be updated
@@ -138,6 +165,55 @@ export class LessonsService {
         return this.lessonRepository.findOne({
             where: { id }
         })
+    }
+
+    async updateOrders(updateLessonsDto: { lessonId: number; courseId: number; order: number }[]) {
+        const updatedLessons: Lessons[] = [];
+        
+        for (const { lessonId, courseId, order } of updateLessonsDto) {
+            // Fetch the existing lesson by ID and courseId
+            const lesson = await this.lessonRepository.findOne({
+                where: { id: lessonId, course: { id: courseId } },
+                relations: ['course', 'lessonSegments'],
+            });
+    
+            if (!lesson) {
+                throw new NotFoundException(`Lesson with ID ${lessonId} not found in course ${courseId}`);
+            }
+    
+            // Fetch the course to ensure it's valid
+            const course = await this.courseService.findOneById(courseId);
+            if (!course) {
+                throw new NotFoundException(`Course with ID ${courseId} not found`);
+            }
+    
+            // // Check if another lesson exists with the same order in this course (excluding current lesson)
+            // const conflictingLesson = await this.lessonRepository.findOne({
+            //     where: {
+            //         course: { id: courseId },
+            //         order: order,
+            //         id: Not(lessonId),
+            //     },
+            // });
+    
+            // if (conflictingLesson) {
+            //     throw new NotFoundException(`Another lesson with order ${order} already exists in this course`);
+            // }
+    
+            // Update the lesson with the new order and course
+            lesson.order = order;
+            lesson.course = course;
+    
+            // Save the updated lesson
+            const updatedLesson = await this.lessonRepository.save(lesson);
+    
+            // Push the updated lesson to the result array
+            updatedLessons.push(updatedLesson);
+
+        }
+    
+        // Return all the updated lessons
+        return updatedLessons;
     }
 
 }
