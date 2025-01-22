@@ -8,7 +8,7 @@ async function bootstrap() {
   const allowedOrigins: string = '*';//configService.get<string>('ALLOWED_ORIGINS') || '*';
 
   app.enableCors({
-    origin: 'http://localhost:3000',//allowedOrigins,
+    origin: true, //'http://localhost:3000',//allowedOrigins,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
     credentials: true,
