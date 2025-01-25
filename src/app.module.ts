@@ -5,7 +5,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PlansModule } from './plans/plans.module';
 import { WaitlistModule } from './waitlist/waitlist.module';
 import { ProductsModule } from './products/products.module';
@@ -30,4 +30,4 @@ import { ProductsModule } from './products/products.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

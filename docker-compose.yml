@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 4000:4000
+      - 4020:4020
     command: npm run start:dev
     volumes:
       # Re-use local composer cache via host-volume
