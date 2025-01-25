@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PlansModule } from './plans/plans.module';
 import { WaitlistModule } from './waitlist/waitlist.module';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { WaitlistModule } from './waitlist/waitlist.module';
     }),
     PlansModule,
     WaitlistModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
