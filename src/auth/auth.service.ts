@@ -2,11 +2,39 @@ import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { HubService } from 'src/hub/hub.service';
+import { SignupDto } from './dto/signup.dto';
+
+interface loginResponseInterface {
+    email: string,
+    firstName: string,
+    lastName: string,
+    isActive: boolean,
+    isCreator: boolean,
+    token: string
+}
+interface usersInterface {
+    email: string,
+    firstName: string,
+    lastName: string,
+    password: string,
+    planId: number,
+    isCreator: boolean,
+    isActive: boolean,
+}
+
+interface hubInterface {
+    userId: number,
+    title: string,
+    hubUrl: string,
+}
+
 
 @Injectable()
 export class AuthService {
     constructor(
         private usersService: UsersService,
+        private hubService: HubService,
         private jwtService: JwtService,
     ) { }
 
@@ -20,14 +48,56 @@ export class AuthService {
     }
 
     async login(user: any) {
+
         const payload = { email: user.email, sub: user.id };
-        return {
-            access_token: this.jwtService.sign(payload),
-        };
+        let token = this.jwtService.sign(payload);
+        let data: any = {
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            isActive: user.isActive,
+            isCreator: user.isCreator,
+            token: token
+        }
+
+        // return {
+        //     access_token: this.jwtService.sign(payload),
+        // };
+        return data
     }
 
-    async signup(email: string, password: string) {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        return this.usersService.create({ email, password: hashedPassword });
+    async signup(data: SignupDto) {
+
+        const hashedPassword = await bcrypt.hash(data.password, 10);
+        // confirm the plan, if the plan amount is > 0 then ensure not to activate the user till the user has paid
+        let userDetails: usersInterface = {
+            email: data.email,
+            password: hashedPassword,
+            planId: data.plan,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            isCreator: true,
+            isActive: true,
+
+        }
+
+        let user = await this.usersService.create(userDetails);
+        if (user) {
+            let hubDetails: hubInterface = {
+                userId: user.id,
+                title: data.hubName,
+                hubUrl: data.url,
+
+            }
+            var hub = await this.hubService.create(hubDetails)
+
+
+        }
+        if (hub) {
+
+            return user
+        }
+        return false
+
     }
 }
