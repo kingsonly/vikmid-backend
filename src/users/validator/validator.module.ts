@@ -12,4 +12,4 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     providers: [IsEmailUniqueConstraint, UsersService],
     exports: [IsEmailUniqueConstraint, UsersModule],
 })
-export class SharedModule { }
+export class ValidatorModule { }

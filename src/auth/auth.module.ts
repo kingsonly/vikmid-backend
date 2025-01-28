@@ -8,12 +8,12 @@ import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
 import { ConfigModule } from '@nestjs/config';
 import { HubModule } from 'src/hub/hub.module';
-import { SharedModule } from 'src/users/validator/shared.module';
+import { ValidatorModule } from 'src/users/validator/validator.module';
 
 
 @Module({
   imports: [
-    SharedModule,
+    ValidatorModule,
     HubModule,
     ConfigModule,
     PassportModule,
