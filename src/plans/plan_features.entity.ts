@@ -21,4 +21,10 @@ export class PlanFeature {
 
     @UpdateDateColumn()
     updatedAt: Date;
+
+    // @ManyToOne(() => Plan, plan => plan.planFeatures, { onDelete: 'CASCADE' })
+    // plan: Plan;
+
+    // @ManyToOne(() => Feature, feature => feature.planFeatures, { onDelete: 'CASCADE' })
+    // feature: Feature;
 }

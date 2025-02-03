@@ -1,14 +1,14 @@
 import { User } from 'src/users/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn, JoinColumn } from 'typeorm';
 
 
-@Entity('subscriptions')
-export class Subscription {
+@Entity('creators_subscriptions')
+export class CreatorsSubscription {
     @PrimaryGeneratedColumn()
     id: string;
 
     @Column()
-    planID: number;
+    planId: number;
 
     @Column({ default: 'active' })
     status: string;
@@ -26,6 +26,7 @@ export class Subscription {
     updatedAt: Date;
 
     @ManyToOne(() => User, (user) => user.subscriptions)
+    //@JoinColumn({ name: 'userId' })
     user: User;
 
 }

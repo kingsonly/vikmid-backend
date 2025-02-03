@@ -9,6 +9,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PlansModule } from './plans/plans.module';
 import { WaitlistModule } from './waitlist/waitlist.module';
 import { ValidatorModule } from './users/validator/validator.module';
+import { PaymentModule } from './payment/payment.module';
+import { CreatorsSubscriptionModule } from './creators-subscription/creators-subscription.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { ValidatorModule } from './users/validator/validator.module';
     }),
     PlansModule,
     WaitlistModule,
+    PaymentModule,
+    CreatorsSubscriptionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

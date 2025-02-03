@@ -32,6 +32,7 @@ interface hubInterface {
 
 @Injectable()
 export class AuthService {
+    private rootUrl: string = "vikmid.com"
     constructor(
         private usersService: UsersService,
         private hubService: HubService,
@@ -57,6 +58,7 @@ export class AuthService {
             lastName: user.lastName,
             isActive: user.isActive,
             isCreator: user.isCreator,
+            plan: user.planId,
             token: token
         }
 
@@ -86,7 +88,7 @@ export class AuthService {
             let hubDetails: hubInterface = {
                 userId: user.id,
                 title: data.hubName,
-                hubUrl: data.url,
+                hubUrl: `${data.url}.${this.rootUrl}`,
 
             }
             var hub = await this.hubService.create(hubDetails)
