@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, ManyToMany, ManyToOne, UpdateDateColumn, CreateDateColumn, JoinColumn } from 'typeorm';
 import { Plan } from 'src/plans/plans.entity';
-import { Subscription } from 'src/subscription/entities/subscription.entity';
+import { CreatorsSubscription } from 'src/creators-subscription/entities/creators-subscription.entity';
 
 @Entity()
 export class User {
@@ -33,8 +33,8 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => Subscription, (subscription) => subscription.user)
-  subscriptions: Subscription[];
+  @OneToMany(() => CreatorsSubscription, (creatorsSubscription) => creatorsSubscription.user)
+  subscriptions: CreatorsSubscription[];
 
   @ManyToOne(() => Plan, (plan) => plan.users)
   @JoinColumn({ name: 'planId' })

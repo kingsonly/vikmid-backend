@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Plan } from './plans.entity';
 import { PlanFeature } from './plan_features.entity';
@@ -14,6 +14,19 @@ export class PlansService {
         private userService: Repository<User>,
     ) { }
 
+
+    async getPlanById(id: number): Promise<Plan> {
+        const plan = await this.planRepo.findOne({
+            where: { id },
+            relations: ['planFeatures', 'planFeatures.feature'], // Load relationships
+        });
+
+        if (!plan) {
+            throw new NotFoundException(`Plan with ID ${id} not found`);
+        }
+
+        return plan;
+    }
     // Get a user's active plan
     async getUserPlan(userId: number): Promise<Plan> {
         const user = await this.userService.findOne({ where: { id: userId } }); // Assuming you have a user service

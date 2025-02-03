@@ -19,4 +19,11 @@ export class HubService {
 
         return this.hubsRepository.save(hub);
     }
+
+    async findAllByCreator(creatorId: number): Promise<Hub[]> {
+        return this.hubsRepository.find(
+            {
+                where: { userId: creatorId, status: true }
+            });
+    }
 }

@@ -8,13 +8,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PlansModule } from './plans/plans.module';
 import { WaitlistModule } from './waitlist/waitlist.module';
-import { SharedModule } from './users/validator/shared.module';
+import { ValidatorModule } from './users/validator/validator.module';
+import { PaymentModule } from './payment/payment.module';
+import { CreatorsSubscriptionModule } from './creators-subscription/creators-subscription.module';
 
 @Module({
   imports: [
     AuthModule,
     UsersModule,
-    SharedModule,
+    ValidatorModule,
     ConfigModule.forRoot({
       isGlobal: true, // Makes the ConfigModule globally available
     }),
@@ -26,6 +28,8 @@ import { SharedModule } from './users/validator/shared.module';
     }),
     PlansModule,
     WaitlistModule,
+    PaymentModule,
+    CreatorsSubscriptionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,5 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { PlanFeature } from './plan_features.entity';
 @Entity('features')
 export class Feature {
     @PrimaryGeneratedColumn()
@@ -21,4 +21,7 @@ export class Feature {
 
     @UpdateDateColumn()
     updatedAt: Date;
+
+    @OneToMany(() => PlanFeature, planFeature => planFeature.feature, { cascade: true })
+    planFeatures: PlanFeature[];
 }
