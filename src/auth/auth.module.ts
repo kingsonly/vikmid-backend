@@ -9,12 +9,14 @@ import { AuthController } from './auth.controller';
 import { ConfigModule } from '@nestjs/config';
 import { HubModule } from 'src/hub/hub.module';
 import { ValidatorModule } from 'src/users/validator/validator.module';
+import { PlansModule } from 'src/plans/plans.module';
 
 
 @Module({
   imports: [
     ValidatorModule,
     HubModule,
+    PlansModule,
     ConfigModule,
     PassportModule,
     JwtModule.register({
