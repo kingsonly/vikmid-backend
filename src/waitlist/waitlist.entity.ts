@@ -16,6 +16,4 @@ export class Waitlist {
 
     @UpdateDateColumn()
     updatedAt: Date;
-
-
 }

@@ -4,6 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import * as cors from 'cors';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { apiReference } from "@scalar/nestjs-api-reference";
+import { ValidationPipe } from '@nestjs/common';
+import { useContainer } from 'class-validator';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,11 +13,13 @@ async function bootstrap() {
   const allowedOrigins: string = '*';//configService.get<string>('ALLOWED_ORIGINS') || '*';
 
   app.enableCors({
-    origin: 'http://localhost:3000',//allowedOrigins,
+    origin: true, //'http://localhost:3000',//allowedOrigins,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
     credentials: true,
   });
+  app.useGlobalPipes(new ValidationPipe());
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
   await app.listen(process.env.PORT ?? 4020);
 
 

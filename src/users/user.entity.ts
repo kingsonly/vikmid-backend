@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, ManyToMany, ManyToOne, UpdateDateColumn, CreateDateColumn, JoinColumn } from 'typeorm';
+import { Plan } from 'src/plans/plans.entity';
+import { CreatorsSubscription } from 'src/creators-subscription/entities/creators-subscription.entity';
 
 @Entity()
 export class User {
@@ -10,9 +12,31 @@ export class User {
 
   @Column()
   password: string;
+  @Column()
+  firstName: string;
+
+  @Column()
+  lastName: string;
 
   @Column({ default: true })
   isActive: boolean;
+
+  @Column({ default: true })
+  isCreator: boolean;
+
   @Column()
   planId: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @OneToMany(() => CreatorsSubscription, (creatorsSubscription) => creatorsSubscription.user)
+  subscriptions: CreatorsSubscription[];
+
+  @ManyToOne(() => Plan, (plan) => plan.users)
+  @JoinColumn({ name: 'planId' })
+  plan: Plan;
 }

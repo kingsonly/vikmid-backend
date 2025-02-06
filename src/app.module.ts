@@ -9,11 +9,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PlansModule } from './plans/plans.module';
 import { WaitlistModule } from './waitlist/waitlist.module';
 import { ProductsModule } from './products/products.module';
+import { ValidatorModule } from './users/validator/validator.module';
+import { PaymentModule } from './payment/payment.module';
+import { CreatorsSubscriptionModule } from './creators-subscription/creators-subscription.module';
 
 @Module({
   imports: [
     AuthModule,
     UsersModule,
+    ValidatorModule,
     ConfigModule.forRoot({
       isGlobal: true, // Makes the ConfigModule globally available
     }),
@@ -26,6 +30,8 @@ import { ProductsModule } from './products/products.module';
     PlansModule,
     WaitlistModule,
     ProductsModule,
+    PaymentModule,
+    CreatorsSubscriptionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
