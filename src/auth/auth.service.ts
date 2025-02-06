@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { HubService } from 'src/hub/hub.service';
 import { SignupDto } from './dto/signup.dto';
+import { PlansService } from 'src/plans/plans.service';
 
 interface loginResponseInterface {
     email: string,
@@ -35,6 +36,7 @@ export class AuthService {
     private rootUrl: string = "vikmid.com"
     constructor(
         private usersService: UsersService,
+        private planService: PlansService,
         private hubService: HubService,
         private jwtService: JwtService,
     ) { }
@@ -69,9 +71,17 @@ export class AuthService {
     }
 
     async signup(data: SignupDto) {
-
+        let isActive: boolean = true
         const hashedPassword = await bcrypt.hash(data.password, 10);
         // confirm the plan, if the plan amount is > 0 then ensure not to activate the user till the user has paid
+        let plan = this.planService.getPlanById(data.plan)
+        if (!plan) {
+            return false
+        }
+        if ((await plan).price > 0) {
+            isActive = false
+        }
+
         let userDetails: usersInterface = {
             email: data.email,
             password: hashedPassword,
@@ -79,7 +89,7 @@ export class AuthService {
             firstName: data.firstName,
             lastName: data.lastName,
             isCreator: true,
-            isActive: true,
+            isActive: isActive,
 
         }
 

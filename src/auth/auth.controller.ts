@@ -27,7 +27,7 @@ export class AuthController {
 
         }
         return {
-            message: "could not create user at this time"
+            message: "could not create user at this time."
         };
     }
 
