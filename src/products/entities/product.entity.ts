@@ -1,9 +1,22 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
+enum ProductType {
+  physical = 'physical',
+  digital = 'digital',
+}
+
+enum ProductStatus {
+  available = 'available',
+  unavailable = 'unavailable',
+}
+
 @Entity('product')
 export class Product {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column()
+  user_id: string;
 
   @Column()
   hub_id: string;
@@ -14,8 +27,8 @@ export class Product {
   @Column('decimal')
   cost: number;
 
-  @Column()
-  type: string;
+  @Column('enum', { enum: ProductType, default: ProductType.physical })
+  type: ProductType;
 
   @Column()
   description: string;
@@ -23,8 +36,8 @@ export class Product {
   @Column()
   product_image: string;
 
-  @Column()
-  status: string;
+  @Column('enum', { enum: ProductStatus, default: ProductStatus.available })
+  status: ProductStatus;
 
   @Column({ default: false })
   with_discount: boolean;

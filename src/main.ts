@@ -20,8 +20,6 @@ async function bootstrap() {
   });
   app.useGlobalPipes(new ValidationPipe());
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
-  await app.listen(process.env.PORT ?? 4020);
-
 
   // Enable Swagger
   const config = new DocumentBuilder()

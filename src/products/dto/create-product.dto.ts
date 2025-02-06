@@ -10,10 +10,16 @@ export class CreateProductDto {
   title: string;
 
   @ApiProperty({
+    description: 'User ID is the creator of the product',
+    example: 'ad2db5a9-551b-4ca9-8b6e-95fe07716227',
+  })
+  @IsString()
+  user_id: string;
+
+  @ApiProperty({
     description: 'Hub ID is the creator of the product',
     example: 'ad2db5a9-551b-4ca9-8b6e-95fe07716227',
   })
-  @IsOptional()
   @IsString()
   hub_id: string;
 
