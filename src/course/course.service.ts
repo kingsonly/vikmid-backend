@@ -5,6 +5,8 @@ import { EntityManager, Repository } from 'typeorm';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UsersService } from 'src/users/users.service';
 import { UpdateCourseDto } from './dto/update-course.dto';
+import { Lessons } from './lessons/lessons.entity/lessons.entity';
+import { Enrollments } from './enrollments/enrollments.entity/enrollments.entity';
 
 @Injectable()
 export class CourseService {
@@ -13,6 +15,12 @@ export class CourseService {
         // this is hoe you get data from the database
         @InjectRepository(Course)
         private readonly courseRepository: Repository<Course>,
+
+        @InjectRepository(Lessons)
+        private readonly lessonRepository: Repository<Lessons>,
+
+        @InjectRepository(Enrollments)
+        private readonly enrollmentRepository: Repository<Enrollments>,
 
         // this is how you send data to the repo
         private readonly entityManager: EntityManager,
@@ -163,6 +171,16 @@ export class CourseService {
         const oldCourse = course;
         if (!course) {
             throw new NotFoundException('Course not found');
+        }
+
+        // Delete all related lesson segments
+        if (course.lessons.length > 0) {
+            await this.lessonRepository.remove(course.lessons);
+        }
+        
+        // Delete all related lesson segments
+        if (course.enrollments.length > 0) {
+            await this.enrollmentRepository.remove(course.enrollments);
         }
     
         await this.courseRepository.delete(courseId);

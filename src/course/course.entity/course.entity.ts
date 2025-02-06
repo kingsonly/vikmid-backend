@@ -67,11 +67,17 @@ export class Course {
     hubId: number;
 
     @ApiProperty({ description: 'Lessons associated with this course.', type: () => [Lessons] })
-    @OneToMany(() => Lessons, (lesson) => lesson.course)
+    @OneToMany(() => Lessons, (lesson) => lesson.course, {
+        cascade: true,
+        onDelete: 'CASCADE',
+    })
     lessons: Lessons[];
 
     @ApiProperty({ description: 'Enrollments associated with this course.', type: () => [Enrollments]})
-    @OneToMany(() => Enrollments, (enrollment) => enrollment.course)
+    @OneToMany(() => Enrollments, (enrollment) => enrollment.course, {
+        cascade: true,
+        onDelete: 'CASCADE',
+    })
     enrollments: Enrollments[];
 
     constructor(course: Partial<Course>) {

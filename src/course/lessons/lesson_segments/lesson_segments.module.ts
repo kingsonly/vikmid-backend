@@ -12,6 +12,6 @@ import { LessonsModule } from '../lessons.module';
   ],
   providers: [LessonSegmentsService],
   controllers: [LessonSegmentsController],
-  exports: [LessonSegmentsService]
+  exports: [LessonSegmentsService, TypeOrmModule]
 })
 export class LessonSegmentsModule {}

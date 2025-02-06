@@ -39,7 +39,9 @@ export class Lessons {
     hubId: number;
 
     @ApiProperty({ description: 'Segments associated with this lesson.', type: () => [LessonSegments] })
-    @OneToMany(() => LessonSegments, (lesson_segment) => lesson_segment.lesson)
+    // @OneToMany(() => LessonSegments, (lesson_segment) => lesson_segment.lesson)
+    // lessonSegments: LessonSegments[];
+    @OneToMany(() => LessonSegments, (lesson_segment) => lesson_segment.lesson, { cascade: true, onDelete: 'CASCADE' })
     lessonSegments: LessonSegments[];
 
     // Student progress relationship loading...

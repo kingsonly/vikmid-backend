@@ -14,6 +14,6 @@ import { CourseModule } from '../course.module';
   ],
   providers: [EnrollmentsService],
   controllers: [EnrollmentsController],
-  exports: [EnrollmentsService],
+  exports: [EnrollmentsService, TypeOrmModule],
 })
 export class EnrollmentsModule {}

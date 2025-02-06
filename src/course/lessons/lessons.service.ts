@@ -5,6 +5,7 @@ import { Lessons } from './lessons.entity/lessons.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateLessonsDto } from './dto/create-lessons.dto';
 import { UpdateLessonsDto } from './dto/update-lessons.dto';
+import { LessonSegments } from './lesson_segments/lesson_segments.entity/lesson_segments.entity';
 
 @Injectable()
 export class LessonsService {
@@ -14,6 +15,9 @@ export class LessonsService {
         // The lesson repository for getting data from db4
         @InjectRepository(Lessons)
         private readonly lessonRepository: Repository<Lessons>,
+
+        @InjectRepository(LessonSegments)
+        private readonly lessonSegmentRepository: Repository<LessonSegments>,
 
         // The entity manager for sending data to db 
         private readonly entityManager: EntityManager,
@@ -152,6 +156,11 @@ export class LessonsService {
         const oldLesson = lesson;
         if (!lesson) {
             throw new NotFoundException('Lesson not found');
+        }
+
+        // Delete all related lesson segments
+        if (lesson.lessonSegments.length > 0) {
+            await this.lessonSegmentRepository.remove(lesson.lessonSegments);
         }
     
         await this.lessonRepository.delete(lessonId);

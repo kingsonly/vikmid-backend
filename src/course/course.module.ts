@@ -7,6 +7,7 @@ import { UsersModule } from 'src/users/users.module';
 import { LessonsModule } from './lessons/lessons.module';
 import { EnrollmentsModule } from './enrollments/enrollments.module';
 import { AuthModule } from 'src/auth/auth.module';
+import { Lessons } from './lessons/lessons.entity/lessons.entity';
 
 @Module({
   imports: [
@@ -18,6 +19,6 @@ import { AuthModule } from 'src/auth/auth.module';
   ],
   providers: [CourseService],
   controllers: [CourseController],
-  exports: [CourseService],
+  exports: [CourseService, TypeOrmModule],
 })
 export class CourseModule {}
