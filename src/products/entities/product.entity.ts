@@ -1,14 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
-
-enum ProductType {
-  physical = 'physical',
-  digital = 'digital',
-}
-
-enum ProductStatus {
-  available = 'available',
-  unavailable = 'unavailable',
-}
+import { DiscountType, ProductStatus, ProductType } from '../product.enum';
 
 @Entity('product')
 export class Product {
@@ -45,6 +36,6 @@ export class Product {
   @Column('decimal', { nullable: true })
   discount_cost: number;
 
-  @Column({ nullable: true })
-  discount_type: string;
+  @Column('enum', { enum: DiscountType, nullable: true })
+  discount_type: DiscountType;
 }
