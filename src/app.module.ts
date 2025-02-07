@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PlansModule } from './plans/plans.module';
 import { WaitlistModule } from './waitlist/waitlist.module';
+import { ProductsModule } from './products/products.module';
 import { ValidatorModule } from './users/validator/validator.module';
 import { PaymentModule } from './payment/payment.module';
 import { CreatorsSubscriptionModule } from './creators-subscription/creators-subscription.module';
@@ -29,6 +30,7 @@ import { LinkInBioModule } from './link-in-bio/link-in-bio.module';
     }),
     PlansModule,
     WaitlistModule,
+    ProductsModule,
     PaymentModule,
     CreatorsSubscriptionModule,
     LinkInBioModule,
