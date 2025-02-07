@@ -39,7 +39,7 @@ export class EnrollmentsService {
         }));
     }
 
-    async findAllByUser(userId: number) {
+    async findAllByUser(userId: string) {
         const enrollments = await this.enrollmentsRepository.find({
             where: { student: { id: userId } },
             relations: ['student', 'course'],
@@ -56,7 +56,7 @@ export class EnrollmentsService {
         }));
     }
 
-    async findAllByCourse(courseId: number) {
+    async findAllByCourse(courseId: string) {
         const enrollments = await this.enrollmentsRepository.find({
             where: {course: {id: courseId}},
             relations: ['student', 'course'],
@@ -73,7 +73,7 @@ export class EnrollmentsService {
         }))
     }
 
-    async findOneByUser(enrollmentId: number, userId: number) {
+    async findOneByUser(enrollmentId: string, userId: string) {
         const enrollment = await this.enrollmentsRepository.findOne({
             where: { id: enrollmentId, student: {id: userId} },
             relations: ['student', 'course'],  
@@ -88,7 +88,7 @@ export class EnrollmentsService {
         };
     }
 
-    async findOneByCourse(courseId: number, enrollmentId: number) {
+    async findOneByCourse(courseId: string, enrollmentId: string) {
         const enrollment = await this.enrollmentsRepository.findOne({
             where: { id: enrollmentId, course: {id: courseId} },
             relations: ['student', 'course'],  
@@ -147,7 +147,7 @@ export class EnrollmentsService {
         } as Enrollments;
     }
 
-    async update(enrollmentId: number, enrollmentDto: UpdateEnrollmentsDto): Promise<Enrollments> {
+    async update(enrollmentId: string, enrollmentDto: UpdateEnrollmentsDto): Promise<Enrollments> {
         // Find the existing course by ID
         const enrollment = await this.enrollmentsRepository.findOne({ 
             where: { id: enrollmentId }, 
@@ -205,7 +205,7 @@ export class EnrollmentsService {
         } as Enrollments;
     }
 
-    async remove(enrollmentId: number): Promise<any> {
+    async remove(enrollmentId: string): Promise<any> {
         const enrollment = await this.enrollmentsRepository.findOne({ where: { id: enrollmentId } });
         const oldEnrollment = enrollment;
         if (!enrollment) {
@@ -220,7 +220,7 @@ export class EnrollmentsService {
     }
 
     
-    findOneById(enrollmentId: number): Promise<Enrollments | undefined> {
+    findOneById(enrollmentId: string): Promise<Enrollments | undefined> {
         return this.enrollmentsRepository.findOne({
             where: { id: enrollmentId }
         })

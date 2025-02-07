@@ -45,7 +45,7 @@ export class CourseController {
     @ApiOperation({ summary: 'Get a course by ID for a specific user' })
     @ApiParam({ name: 'courseId', description: 'ID of the course' })
     @ApiResponse({ status: 200, description: 'Course details', type: Course })
-    async findOne(@Param('courseId', ParseIntPipe) courseId: number, @Request() req) {
+    async findOne(@Param('courseId', ParseIntPipe) courseId: string, @Request() req) {
         const userId = req.user.userId;
         const course = await this.courseService.findOne(courseId, userId);
         return { data: course, message: 'Course details fetched successfully' };
@@ -66,7 +66,7 @@ export class CourseController {
     @ApiParam({ name: 'courseId', description: 'ID of the course' })
     @ApiResponse({ status: 200, description: 'Course updated successfully', type: Course })
     async update(
-        @Param('courseId', ParseIntPipe) courseId: number,
+        @Param('courseId', ParseIntPipe) courseId: string,
         @Body(ValidationPipe) courseDto: UpdateCourseDto
     ) {
         const updatedCourse = await this.courseService.update(courseId, courseDto);
@@ -78,7 +78,7 @@ export class CourseController {
     @ApiOperation({ summary: 'Delete a course' })
     @ApiParam({ name: 'courseId', description: 'ID of the course' })
     @ApiResponse({ status: 200, description: 'Course deleted successfully' })
-    async remove(@Param('courseId', ParseIntPipe) courseId: number) {
+    async remove(@Param('courseId', ParseIntPipe) courseId: string) {
         const deletedCourse = await this.courseService.remove(courseId);
         return { data: deletedCourse };
     }

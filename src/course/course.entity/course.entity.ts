@@ -7,8 +7,8 @@ import { ApiProperty } from "@nestjs/swagger";
 @Entity()
 export class Course {
     @ApiProperty({ description: 'Unique identifier for the course', example: 1 })
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @ApiProperty({ description: 'Course creator', type: () => User })
     @ManyToOne(() => User, (user) => user.courses, { eager: true })

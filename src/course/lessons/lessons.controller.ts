@@ -18,7 +18,7 @@ export class LessonsController {
     @ApiOperation({ summary: 'Retrieve all lessons for a course.' })
     @ApiParam({ name: 'courseId', required: true })
     @ApiResponse({ status: 200, description: 'Retrieve all lessons for a course.', type: [Lessons] })
-    async findAll(@Param('courseId', ParseIntPipe) courseId: number) {
+    async findAll(@Param('courseId', ParseIntPipe) courseId: string) {
         return this.lessonsService.findAll(courseId);
     }
 
@@ -27,7 +27,7 @@ export class LessonsController {
     @ApiOperation({ summary: 'Retrieve a single lesson.' })
     @ApiParam({ name: 'lessonId', required: true })
     @ApiResponse({ status: 200, description: 'Retrieve a single lesson.', type: Lessons})
-    async findAnyOne(@Param('lessonId', ParseIntPipe) lessonId: number) {
+    async findAnyOne(@Param('lessonId', ParseIntPipe) lessonId: string) {
         return this.lessonsService.findAnyOne(lessonId);
     }    
 
@@ -38,8 +38,8 @@ export class LessonsController {
     @ApiParam({ name: 'lessonId', required: true })
     @ApiResponse({ status: 200, description: 'Retrieve a specific lesson in a course.', type: Lessons })
     async findOne(
-        @Param('courseId', ParseIntPipe) courseId: number,
-        @Param('lessonId', ParseIntPipe) lessonId: number
+        @Param('courseId', ParseIntPipe) courseId: string,
+        @Param('lessonId', ParseIntPipe) lessonId: string
     ) {
         return this.lessonsService.findOne(courseId, lessonId);
     }
@@ -59,7 +59,7 @@ export class LessonsController {
     @ApiBody({ description: 'Update lesson orders', type: [UpdateLessonsDto] })
     @ApiResponse({ status: 200, description: 'Lessons order updated successfully.', type: Lessons })
     async updateOrders(
-        @Body() updateLessonsDto: { lessonId: number; courseId: number; order: number }[], 
+        @Body() updateLessonsDto: { lessonId: string; courseId: string; order: number }[], 
     ) {
         return this.lessonsService.updateOrders(updateLessonsDto);
     }
@@ -70,7 +70,7 @@ export class LessonsController {
     @ApiParam({ name: 'lessonId', required: true })
     @ApiBody({ type: UpdateLessonsDto })
     @ApiResponse({ status: 200, description: 'Lesson updated successfully.', type: Lessons })
-    async update(@Param('lessonId', ParseIntPipe) lessonId: number, @Body(ValidationPipe) lessonDto: UpdateLessonsDto) {
+    async update(@Param('lessonId', ParseIntPipe) lessonId: string, @Body(ValidationPipe) lessonDto: UpdateLessonsDto) {
         return this.lessonsService.update(lessonId, lessonDto);
     }
 
@@ -79,7 +79,7 @@ export class LessonsController {
     @ApiParam({ name: 'lessonId', required: true })
     @ApiOperation({ summary: 'Delete a lesson.' })
     @ApiResponse({ status: 200, description: 'Lesson deleted successfully.' })
-    async remove(@Param('lessonId', ParseIntPipe) lessonId: number) {
+    async remove(@Param('lessonId', ParseIntPipe) lessonId: string) {
         return this.lessonsService.remove(lessonId);
     }
 }

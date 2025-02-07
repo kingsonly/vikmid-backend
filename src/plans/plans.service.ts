@@ -15,7 +15,7 @@ export class PlansService {
     ) { }
 
     // Get a user's active plan
-    async getUserPlan(userId: number): Promise<Plan> {
+    async getUserPlan(userId: string): Promise<Plan> {
         const user = await this.userService.findOne({ where: { id: userId } }); // Assuming you have a user service
         return this.planRepo.findOne({ where: { id: user.planId } });
     }
@@ -45,7 +45,7 @@ export class PlansService {
 
     // Check a specific feature limit
     async checkFeatureLimit(
-        userId: number,
+        userId: string,
         featureKey: string,
         currentCount: number,
     ): Promise<boolean> {

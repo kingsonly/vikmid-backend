@@ -7,8 +7,8 @@ import { text } from "stream/consumers";
 @Entity()
 export class Lessons {
     @ApiProperty({ description: 'Unique identifier for the lesson.' })
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @ApiProperty({ description: 'The course associated with the lesson.', type: () => Course })
     @ManyToOne(() => Course, (course) => course.lessons, { eager: true })

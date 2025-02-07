@@ -1,11 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsBoolean, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class CreateLessonSegmentsDto {
     @ApiProperty({ description: 'ID of the lesson this segment belongs to' })
     @IsNotEmpty()
-    @IsInt()
-    lessonId: number;
+    @IsUUID()
+    lessonId: string;
 
     @ApiProperty({ description: 'The type of the lesson segment' })
     @IsNotEmpty()

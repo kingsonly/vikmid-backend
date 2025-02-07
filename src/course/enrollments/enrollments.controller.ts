@@ -33,14 +33,14 @@ export class EnrollmentsController {
     @ApiParam({
         name: 'courseId',
         description: 'The ID of the course for which to fetch enrollments',
-        type: Number,
+        type: String,
     })
     @ApiResponse({
         status: 200,
         description: 'List of enrollments for the course',
         type: [() => Enrollments], // Replace with appropriate DTO or response model
     })
-    async findAllByCourse(@Param('courseId', ParseIntPipe) courseId: number) {
+    async findAllByCourse(@Param('courseId', ParseIntPipe) courseId: string) {
         return this.enrollmentsService.findAllByCourse(courseId);
     }
 
@@ -51,7 +51,7 @@ export class EnrollmentsController {
     @ApiParam({
         name: 'enrollmentId',
         description: 'The ID of the enrollment to fetch for the authenticated user',
-        type: Number,
+        type: String,
     })
     @ApiResponse({
         status: 200,
@@ -59,7 +59,7 @@ export class EnrollmentsController {
         type: () => Enrollments, // Replace with appropriate DTO or response model
     })
     async findOneByUser(
-        @Param('enrollmentId', ParseIntPipe) enrollmentId: number,
+        @Param('enrollmentId', ParseIntPipe) enrollmentId: string,
         @Request() req
     ) {
         return this.enrollmentsService.findOneByUser(enrollmentId, req.user.userId);
@@ -72,12 +72,12 @@ export class EnrollmentsController {
     @ApiParam({
         name: 'courseId',
         description: 'The ID of the course to fetch the enrollment for',
-        type: Number,
+        type: String,
     })
     @ApiParam({
         name: 'enrollmentId',
         description: 'The ID of the enrollment to fetch for the course',
-        type: Number,
+        type: String,
     })
     @ApiResponse({
         status: 200,
@@ -85,8 +85,8 @@ export class EnrollmentsController {
         type: () => Enrollments, // Replace with appropriate DTO or response model
     })
     async findOneByCourse(
-        @Param('courseId', ParseIntPipe) courseId: number,
-        @Param('enrollmentId', ParseIntPipe) enrollmentId: number
+        @Param('courseId', ParseIntPipe) courseId: string,
+        @Param('enrollmentId', ParseIntPipe) enrollmentId: string
     ) {
         return this.enrollmentsService.findOneByCourse(courseId, enrollmentId);
     }
@@ -111,11 +111,11 @@ export class EnrollmentsController {
     @ApiParam({
         name: 'enrollmentId',
         description: 'The ID of the enrollment to update',
-        type: Number,
+        type: String,
     })
     @ApiResponse({ status: 200, description: 'The updated enrollment', type: () => Enrollments})
     async update(
-        @Param('enrollmentId', ParseIntPipe) enrollmentId: number,
+        @Param('enrollmentId', ParseIntPipe) enrollmentId: string,
         @Body(ValidationPipe) enrollmentDto: UpdateEnrollmentsDto
     ) {
         return this.enrollmentsService.update(enrollmentId, enrollmentDto);
@@ -128,13 +128,13 @@ export class EnrollmentsController {
     @ApiParam({
         name: 'enrollmentId',
         description: 'The ID of the enrollment to delete',
-        type: Number,
+        type: String,
     })
     @ApiResponse({
         status: 200,
         description: 'Enrollment successfully deleted',
     })
-    async remove(@Param('enrollmentId', ParseIntPipe) enrollmentId: number) {
+    async remove(@Param('enrollmentId', ParseIntPipe) enrollmentId: string) {
         return this.enrollmentsService.remove(enrollmentId);
     }
 }

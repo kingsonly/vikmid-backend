@@ -6,8 +6,8 @@ import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGenerat
 @Entity()
 export class Enrollments {
     @ApiProperty({ description: 'Unique identifier for the enrollment' })
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @ApiProperty({ description: 'Student associated with the enrollment', type: () => User })
     @ManyToOne(() => User, (user) => user.enrollments)

@@ -65,7 +65,7 @@ export class CourseService {
         });
     }
 
-    async findAllByUser(userId: number) {
+    async findAllByUser(userId: string) {
         const courses = await this.courseRepository.find({
             where: {creator: {id: userId}},
             relations: ['creator', 'lessons', 'enrollments'],
@@ -108,7 +108,7 @@ export class CourseService {
         } as Course;
     }
 
-    async findOne(courseId: number, userId: number) {
+    async findOne(courseId: string, userId: string) {
         const course = await this.courseRepository.findOne({
             where: { id: courseId, creator: {id: userId} },
             relations: ['creator', 'lessons', 'enrollments'],  
@@ -122,7 +122,7 @@ export class CourseService {
         };
     }
 
-    async findAnyOne(courseId: number): Promise<Course> {
+    async findAnyOne(courseId: string): Promise<Course> {
         const course = await this.courseRepository.findOne({
             where: { id: courseId },
             relations: ['creator', 'lessons', 'enrollments'],  
@@ -133,7 +133,7 @@ export class CourseService {
         return course;
     }
 
-    async update(courseId: number, courseDto: UpdateCourseDto): Promise<Course> {
+    async update(courseId: string, courseDto: UpdateCourseDto): Promise<Course> {
         if (!courseDto || !courseDto.creatorId) {
             throw new ConflictException("Invalid or missing payload data")
         }
@@ -166,7 +166,7 @@ export class CourseService {
         } as Course;
     }
 
-    async remove(courseId: number): Promise<any> {
+    async remove(courseId: string): Promise<any> {
         const course = await this.courseRepository.findOne({ where: { id: courseId } });
         const oldCourse = course;
         if (!course) {
@@ -191,7 +191,7 @@ export class CourseService {
     }
 
     
-    findOneById(courseId: number): Promise<Course | undefined> {
+    findOneById(courseId: string): Promise<Course | undefined> {
         return this.courseRepository.findOne({
             where: { id: courseId }
         })

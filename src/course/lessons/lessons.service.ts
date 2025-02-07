@@ -26,7 +26,7 @@ export class LessonsService {
         private readonly courseService: CourseService,
     ) {}
 
-    async findAll(courseId: number): Promise<any> {
+    async findAll(courseId: string): Promise<any> {
         const lessons = await this.lessonRepository.find({
             where: {course: {id: courseId}},
             relations: ['course', 'lessonSegments'],
@@ -46,7 +46,7 @@ export class LessonsService {
         });
     }
 
-    async findOne(courseId: number, lessonId: number): Promise<Lessons> {
+    async findOne(courseId: string, lessonId: string): Promise<Lessons> {
         const lesson = await this.lessonRepository.findOne({
             where: {id: lessonId, course: {id: courseId}},
             relations: ['course', 'lessonSegments'],
@@ -59,7 +59,7 @@ export class LessonsService {
         return lesson;
     }
 
-    async findAnyOne(lessonId: number): Promise<Lessons> {
+    async findAnyOne(lessonId: string): Promise<Lessons> {
         const lesson = await this.lessonRepository.findOne({
             where: {id: lessonId},
             relations: ['course', 'lessonSegments'],
@@ -104,7 +104,7 @@ export class LessonsService {
         } as Lessons;
     }
 
-    async update(lessonId: number, lessonDto: UpdateLessonsDto): Promise<Lessons> {
+    async update(lessonId: string, lessonDto: UpdateLessonsDto): Promise<Lessons> {
         // Find the existing course by ID
         const lesson = await this.lessonRepository.findOne({ where: { id: lessonId }, relations: ['course', 'lessonSegments'] });
         if (!lesson) {
@@ -151,7 +151,7 @@ export class LessonsService {
         } as Lessons;
     }
 
-    async remove(lessonId: number): Promise<any> {
+    async remove(lessonId: string): Promise<any> {
         const lesson = await this.lessonRepository.findOne({ where: { id: lessonId } });
         const oldLesson = lesson;
         if (!lesson) {
@@ -170,13 +170,13 @@ export class LessonsService {
         }
     }
 
-    findOneById(id: number): Promise<Lessons | undefined> {
+    findOneById(id: string): Promise<Lessons | undefined> {
         return this.lessonRepository.findOne({
             where: { id }
         })
     }
 
-    async updateOrders(updateLessonsDto: { lessonId: number; courseId: number; order: number }[]) {
+    async updateOrders(updateLessonsDto: { lessonId: string; courseId: string; order: number }[]) {
         const updatedLessons: Lessons[] = [];
         
         for (const { lessonId, courseId, order } of updateLessonsDto) {

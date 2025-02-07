@@ -14,29 +14,29 @@ export class LessonSegmentsController {
     ) {}
 
     @Get(':lessonId')
-    @ApiParam({ name: 'lessonId', type: Number, description: 'ID of the lesson' })
+    @ApiParam({ name: 'lessonId', type: String, description: 'ID of the lesson' })
     @ApiOperation({ summary: 'Fetch all lessons segments for a particular lesson' })
     @ApiResponse({ status: 200, description: 'Successfully retrieved lesson segments.', type: [LessonSegments] })
-    async findAll(@Param('lessonId', ParseIntPipe) lessonId: number) {
+    async findAll(@Param('lessonId', ParseIntPipe) lessonId: string) {
         return this.lessonSegmentsService.findAll(lessonId);
     }
 
     @Get('lessonSegment/:lessonSegmentId')
-    @ApiParam({ name: 'lessonSegmentId', type: Number, description: 'ID of the lesson segment' })
+    @ApiParam({ name: 'lessonSegmentId', type: String, description: 'ID of the lesson segment' })
     @ApiOperation({ summary: 'Fetch a specific lesson segment by its ID' })
     @ApiResponse({ status: 200, description: 'Successfully retrieved the lesson segment.', type: LessonSegments })
-    async findAnyOne(@Param('lessonSegmentId', ParseIntPipe) lessonSegmentId: number) {
+    async findAnyOne(@Param('lessonSegmentId', ParseIntPipe) lessonSegmentId: string) {
         return this.lessonSegmentsService.findAnyOne(lessonSegmentId);
     }  
 
     @Get(':lessonId/:lessonSegmentId')
-    @ApiParam({ name: 'lessonId', type: Number, description: 'ID of the lesson' })
-    @ApiParam({ name: 'lessonSegmentId', type: Number, description: 'ID of the lesson segment' })
+    @ApiParam({ name: 'lessonId', type: String, description: 'ID of the lesson' })
+    @ApiParam({ name: 'lessonSegmentId', type: String, description: 'ID of the lesson segment' })
     @ApiOperation({ summary: 'Fetch a specific lesson segment by lesson and segment IDs' })
     @ApiResponse({ status: 200, description: 'Successfully retrieved the lesson segment.', type: LessonSegments })
     async findOne(
-        @Param('lessonId', ParseIntPipe) lessonId: number,
-        @Param('lessonSegmentId', ParseIntPipe) lessonSegmentId: number
+        @Param('lessonId', ParseIntPipe) lessonId: string,
+        @Param('lessonSegmentId', ParseIntPipe) lessonSegmentId: string
     ) {
         return this.lessonSegmentsService.findOne(lessonId, lessonSegmentId);
     }
@@ -53,30 +53,30 @@ export class LessonSegmentsController {
     @ApiResponse({ status: 200, description: 'Lesson segment orders successfully updated.', type: [LessonSegments] })
     async updateOrders(
         @Body(new ValidationPipe({ whitelist: true })) 
-        updateOrdersDto: { lessonSegmentId: number; lessonId: number; order: number }[]
+        updateOrdersDto: { lessonSegmentId: string; lessonId: string; order: number }[]
     ) {
         return this.lessonSegmentsService.updateOrders(updateOrdersDto);
     }
 
     @Patch(':lessonSegmentId')
-    @ApiParam({ name: 'lessonSegmentId', type: Number, description: 'ID of the lesson segment' })
+    @ApiParam({ name: 'lessonSegmentId', type: String, description: 'ID of the lesson segment' })
     @ApiOperation({ summary: 'Update a specific lesson segment by its ID' })
     @ApiResponse({ status: 200, description: 'Lesson segment successfully updated.', type: LessonSegments })
     async update(
-        @Param('lessonSegmentId', ParseIntPipe) lessonSegmentId: number, 
+        @Param('lessonSegmentId', ParseIntPipe) lessonSegmentId: string, 
         @Body() lessonSegmentDto: UpdateLessonSegmentsDto
     ) {
         return this.lessonSegmentsService.update(lessonSegmentId, lessonSegmentDto);
     }
 
     @Delete(':lessonSegmentId')
-    @ApiParam({ name: 'lessonSegmentId', type: Number, description: 'ID of the lesson segment' })
+    @ApiParam({ name: 'lessonSegmentId', type: String, description: 'ID of the lesson segment' })
     @ApiOperation({ summary: 'Delete a lesson segment by its ID' })
     @ApiResponse({ status: 200, description: 'Lesson segment successfully deleted.', type: () => [{
         message: String,
         deletedSegment: Object,
     }]})
-    async remove(@Param('lessonSegmentId', ParseIntPipe) lessonSegmentId: number) {
+    async remove(@Param('lessonSegmentId', ParseIntPipe) lessonSegmentId: string) {
         return this.lessonSegmentsService.remove(lessonSegmentId);
     }
 }

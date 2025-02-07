@@ -20,7 +20,7 @@ export class LessonSegmentsService {
         private readonly lessonsService: LessonsService,
     ) {}
 
-    async findAll(lessonId: number): Promise<any> {
+    async findAll(lessonId: string): Promise<any> {
         const lessonSegments = await this.lessonSegmentsRepository.find({
             where: {lesson: {id: lessonId}},
             relations: ['lesson'],
@@ -38,7 +38,7 @@ export class LessonSegmentsService {
         });
     }
 
-    async findOne(lesonId: number, lessonSegmentId: number): Promise<LessonSegments> {
+    async findOne(lesonId: string, lessonSegmentId: string): Promise<LessonSegments> {
         const lessonSegment = await this.lessonSegmentsRepository.findOne({
             where: {id: lessonSegmentId, lesson: {id: lesonId}},
             relations: ['lesson'],
@@ -51,7 +51,7 @@ export class LessonSegmentsService {
         return lessonSegment;
     }
 
-    async findAnyOne(lessonSegmentId: number): Promise<LessonSegments> {
+    async findAnyOne(lessonSegmentId: string): Promise<LessonSegments> {
         const lessonSegment = await this.lessonSegmentsRepository.findOne({
             where: {id: lessonSegmentId},
             relations: ['lesson'],
@@ -96,7 +96,7 @@ export class LessonSegmentsService {
         } as LessonSegments;
     }
 
-    async update(lessonSegmentId: number, lessonSegmentDto: UpdateLessonSegmentsDto): Promise<LessonSegments> {
+    async update(lessonSegmentId: string, lessonSegmentDto: UpdateLessonSegmentsDto): Promise<LessonSegments> {
         // Find the existing lessonSegment by ID
         const lessonSegment = await this.lessonSegmentsRepository.findOne({ where: { id: lessonSegmentId }, relations: ['lesson'] });
         if (!lessonSegment) {
@@ -143,7 +143,7 @@ export class LessonSegmentsService {
         } as LessonSegments;
     }
 
-    async remove(lessonSegmentId: number): Promise<any> {
+    async remove(lessonSegmentId: string): Promise<any> {
         const lessonSegment = await this.lessonSegmentsRepository.findOne({ where: { id: lessonSegmentId } });
         const oldLessonSegment = lessonSegment;
         if (!lessonSegment) {
@@ -157,7 +157,7 @@ export class LessonSegmentsService {
         }
     }
 
-    async updateOrders(updateOrdersDto: { lessonSegmentId: number; lessonId: number; order: number }[]) {
+    async updateOrders(updateOrdersDto: { lessonSegmentId: string; lessonId: string; order: number }[]) {
         const updatedSegments: LessonSegments[] = [];
 
         for (const { lessonSegmentId, lessonId, order } of updateOrdersDto) {
@@ -200,7 +200,7 @@ export class LessonSegmentsService {
         return updatedSegments;
     }
 
-    findOneById(id: number): Promise<LessonSegments | undefined> {
+    findOneById(id: string): Promise<LessonSegments | undefined> {
         return this.lessonSegmentsRepository.findOne({
             where: { id }
         })

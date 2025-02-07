@@ -1,11 +1,11 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class CreateLessonsDto {
     @ApiProperty({ description: 'Reference the course by its ID for easier DTO usage' })
     @IsNotEmpty()
-    @IsNumber()
-    courseId: number;
+    @IsUUID()
+    courseId: string;
 
     @ApiProperty({ description: 'Title of the lesson' })
     @IsNotEmpty()
