@@ -73,7 +73,7 @@ jobs:
       - name: Install rsync
         run: sudo apt-get install -y rsync
 
-      - name: SSH login and deploy
+      - name: SSH login and deploy.
         run: |
           mkdir -p ~/.ssh
           echo "${{secrets.SSH_PRIVATE_KEY}}" > ~/.ssh/id_rsa
