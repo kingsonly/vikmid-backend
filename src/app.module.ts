@@ -11,6 +11,7 @@ import { WaitlistModule } from './waitlist/waitlist.module';
 import { ValidatorModule } from './users/validator/validator.module';
 import { PaymentModule } from './payment/payment.module';
 import { CreatorsSubscriptionModule } from './creators-subscription/creators-subscription.module';
+import { LinkInBioModule } from './link-in-bio/link-in-bio.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { CreatorsSubscriptionModule } from './creators-subscription/creators-sub
     WaitlistModule,
     PaymentModule,
     CreatorsSubscriptionModule,
+    LinkInBioModule,
   ],
   controllers: [AppController],
   providers: [AppService],
