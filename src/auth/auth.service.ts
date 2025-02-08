@@ -92,7 +92,7 @@ export class AuthService {
             isActive: isActive,
 
         }
-
+ 
         let user = await this.usersService.create(userDetails);
         if (user) {
             let hubDetails: hubInterface = {

@@ -17,7 +17,7 @@ async function bootstrap() {
   });
   app.useGlobalPipes(new ValidationPipe());
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
-  await app.listen(process.env.PORT ?? 4020);
+  await app.listen(process.env.PORT ?? 4020, '0.0.0.0');
 
 }
 bootstrap();
