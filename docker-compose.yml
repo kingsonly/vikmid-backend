@@ -6,7 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 4020:4020
+      # - 4020:4020
+      - 5000:4000
     command: npm run start:dev
     volumes:
       # Re-use local composer cache via host-volume
@@ -41,6 +42,8 @@ services:
       - MYSQL_DATABASE=forge
       - MYSQL_USER=forge
       - MYSQL_PASSWORD=Ubuxa##99
+    ports: 
+      - 3308:3306
     networks:
       - vikmid-backend
 
