@@ -40,7 +40,7 @@ export class EnrollmentsController {
         description: 'List of enrollments for the course',
         type: [() => Enrollments], // Replace with appropriate DTO or response model
     })
-    async findAllByCourse(@Param('courseId', ParseIntPipe) courseId: string) {
+    async findAllByCourse(@Param('courseId') courseId: string) {
         return this.enrollmentsService.findAllByCourse(courseId);
     }
 
@@ -59,7 +59,7 @@ export class EnrollmentsController {
         type: () => Enrollments, // Replace with appropriate DTO or response model
     })
     async findOneByUser(
-        @Param('enrollmentId', ParseIntPipe) enrollmentId: string,
+        @Param('enrollmentId') enrollmentId: string,
         @Request() req
     ) {
         return this.enrollmentsService.findOneByUser(enrollmentId, req.user.userId);
@@ -85,8 +85,8 @@ export class EnrollmentsController {
         type: () => Enrollments, // Replace with appropriate DTO or response model
     })
     async findOneByCourse(
-        @Param('courseId', ParseIntPipe) courseId: string,
-        @Param('enrollmentId', ParseIntPipe) enrollmentId: string
+        @Param('courseId') courseId: string,
+        @Param('enrollmentId') enrollmentId: string
     ) {
         return this.enrollmentsService.findOneByCourse(courseId, enrollmentId);
     }
@@ -115,7 +115,7 @@ export class EnrollmentsController {
     })
     @ApiResponse({ status: 200, description: 'The updated enrollment', type: () => Enrollments})
     async update(
-        @Param('enrollmentId', ParseIntPipe) enrollmentId: string,
+        @Param('enrollmentId') enrollmentId: string,
         @Body(ValidationPipe) enrollmentDto: UpdateEnrollmentsDto
     ) {
         return this.enrollmentsService.update(enrollmentId, enrollmentDto);
@@ -134,7 +134,7 @@ export class EnrollmentsController {
         status: 200,
         description: 'Enrollment successfully deleted',
     })
-    async remove(@Param('enrollmentId', ParseIntPipe) enrollmentId: string) {
+    async remove(@Param('enrollmentId') enrollmentId: string) {
         return this.enrollmentsService.remove(enrollmentId);
     }
 }

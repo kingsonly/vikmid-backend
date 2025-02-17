@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsDecimal, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsDecimal, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class CreateCourseDto {
     @ApiProperty({ description: 'Title of the course', example: 'NestJS for Beginners' })
@@ -52,9 +52,9 @@ export class CreateCourseDto {
     withCertificate?: boolean;
 
     @ApiProperty({ description: 'ID of the hub related to the course', example: 1, required: false })
-    @IsOptional()
-    @IsNumber()
-    hubId?: number;
+    @IsNotEmpty()
+    @IsUUID()
+    hubId: string;
 
     @ApiProperty({ description: 'ID of the course creator (user)', example: 1 })
     @IsNotEmpty()

@@ -23,7 +23,7 @@ export class CreateLessonsDto {
     order: number;
 
     @ApiProperty({ description: 'Optional hub ID related to the lesson', required: false })
-    @IsOptional()
-    @IsNumber()
-    hubId?: number;
+    @IsNotEmpty()
+    @IsUUID()
+    hubId: string;
 }

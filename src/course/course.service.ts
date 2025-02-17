@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Course } from './course.entity/course.entity';
 import { EntityManager, Repository } from 'typeorm';
@@ -29,40 +29,36 @@ export class CourseService {
         private readonly userService: UsersService,
     ) {}
 
-    async findAll() {
+    // async findAll() {
+    //     const courses = await this.courseRepository.find({
+    //         relations: ['creator', 'lessons', 'enrollments'],
+    //     });
+
+    //     if (courses.length === 0) {
+    //         throw new NotFoundException("There are no courses for this user");
+    //     }
+
+    //     // Check if creator is being fetched correctly
+    //     return courses.map(course => {
+
+    //         return {
+    //             ...course,
+    //         };
+    //     });
+    // }
+
+    async findAllForUser(hubId: string, userId: number) {
         const courses = await this.courseRepository.find({
+            where: {hubId: hubId, creator: {id: userId}},
             relations: ['creator', 'lessons', 'enrollments'],
         });
 
         if (courses.length === 0) {
-            throw new NotFoundException("There are no courses for this user");
+            throw new HttpException("There are no courses for this user", HttpStatus.NO_CONTENT);
         }
 
         // Check if creator is being fetched correctly
-        return courses.map(course => {
-
-            return {
-                ...course,
-            };
-        });
-    }
-
-    async findAllForUser() {
-        const courses = await this.courseRepository.find({
-            relations: ['creator', 'lessons', 'enrollments'],
-        });
-
-        if (courses.length === 0) {
-            throw new NotFoundException("There are no courses for this user");
-        }
-
-        // Check if creator is being fetched correctly
-        return courses.map(course => {
-
-            return {
-                ...course,
-            };
-        });
+        return courses;
     }
 
     async findAllByUser(userId: number) {
@@ -72,24 +68,30 @@ export class CourseService {
         });
 
         if (courses.length === 0) {
-            throw new NotFoundException("There are no courses for this user");
+            throw new HttpException("There are no courses for this user", HttpStatus.NO_CONTENT);
         }
 
         // Check if creator is being fetched correctly
-        return courses.map(course => {
+        return courses;
+    }
 
-            return {
-                ...course,
-                creatorId: course.creator.id, // Accessing the creator ID directly
-            };
+    async findOne(courseId: string, hubId: string) {
+        const course = await this.courseRepository.findOne({
+            where: { id: courseId, hubId },
+            relations: ['creator', 'lessons', 'enrollments'],  
         });
+        if (!course) {
+            throw new HttpException("Course not found for this user", HttpStatus.NO_CONTENT);
+        }
+        
+        return course;
     }
 
     async create(courseDto: CreateCourseDto): Promise<Course> {
         // Fetch the user based on the provided creatorId
         const user = await this.userService.findOneById(courseDto.creatorId);
         if (!user) {
-            throw new NotFoundException('User not found');
+            throw new HttpException('User not found', HttpStatus.NO_CONTENT);
         }
 
         // Create the course entity and assign the creator relationship
@@ -102,24 +104,7 @@ export class CourseService {
         const savedCourse = await this.entityManager.save(course);
 
         // Return the saved course with the creatorId included
-        return {
-            ...savedCourse,
-            creatorId: savedCourse.creator.id,
-        } as Course;
-    }
-
-    async findOne(courseId: string, userId: number) {
-        const course = await this.courseRepository.findOne({
-            where: { id: courseId, creator: {id: userId} },
-            relations: ['creator', 'lessons', 'enrollments'],  
-        });
-        if (!course) {
-            throw new NotFoundException("Course not found for this user");
-        }
-        return {
-            ...course,
-            creatorId: course.creator.id,  
-        };
+        return savedCourse;
     }
 
     async findAnyOne(courseId: string): Promise<Course> {
@@ -128,7 +113,7 @@ export class CourseService {
             relations: ['creator', 'lessons', 'enrollments'],  
         });
         if (!course) {
-            throw new NotFoundException("Course not found");
+            throw new HttpException("Course not found", HttpStatus.NO_CONTENT);
         }
         return course;
     }
@@ -141,14 +126,14 @@ export class CourseService {
         // Find the existing course by ID
         const course = await this.courseRepository.findOne({ where: { id: courseId, creator: {id: courseDto.creatorId} }, relations: ['creator', 'lessons', 'enrollments'] });
         if (!course) {
-            throw new NotFoundException('Course not found');
+            throw new HttpException('Course not found', HttpStatus.NO_CONTENT);
         }
 
         // If the creatorId is provided and needs to be updated
         if (courseDto.creatorId) {
             const user = await this.userService.findOneById(courseDto.creatorId);
             if (!user) {
-                throw new NotFoundException('User not found');
+                throw new HttpException('User not found', HttpStatus.NO_CONTENT);
             }
             course.creator = user;
         }
@@ -160,18 +145,16 @@ export class CourseService {
         const updatedCourse = await this.entityManager.save(course);
 
         // Return the updated course with creatorId explicitly included
-        return {
-            ...updatedCourse,
-            creatorId: updatedCourse.creator.id,
-        } as Course;
+        return updatedCourse;
     }
 
-    async remove(courseId: string): Promise<any> {
-        const course = await this.courseRepository.findOne({ where: { id: courseId } });
-        const oldCourse = course;
+    async remove(courseId: string, hubId: string): Promise<any> {
+        const course = await this.courseRepository.findOne({ where: { id: courseId, hubId } });
         if (!course) {
-            throw new NotFoundException('Course not found');
+            throw new HttpException('Course not found', HttpStatus.NO_CONTENT);
         }
+        
+        const oldCourse = course;
 
         // Delete all related lesson segments
         if (course.lessons.length > 0) {

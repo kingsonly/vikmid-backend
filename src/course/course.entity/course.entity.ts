@@ -62,9 +62,9 @@ export class Course {
     @Column({ default: false })
     withCertificate: boolean;
 
-    @ApiProperty({ description: 'ID of the hub related to the course', example: 1, nullable: true })
-    @Column({ nullable: true })
-    hubId: number;
+    @ApiProperty({ description: 'ID of the hub related to the course', example: "1jjheudfvw892829202bdjwjjw"})
+    @Column('text')
+    hubId: string;
 
     @ApiProperty({ description: 'Lessons associated with this course.', type: () => [Lessons] })
     @OneToMany(() => Lessons, (lesson) => lesson.course, {

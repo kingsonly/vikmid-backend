@@ -13,43 +13,13 @@ export class CourseController {
     constructor(private readonly courseService: CourseService) {}
 
 
-    @Get('all/guest')
-    @ApiOperation({ summary: 'Get all courses for guests' })
-    @ApiResponse({ status: 200, description: 'List of all courses', type: [Course] })
-    async findAll() {
-        const courses = await this.courseService.findAll();
-        return { data: courses, message: 'Courses fetched successfully' };
-    }
-
-    @UseGuards(JwtAuthGuard)
-    @Get('all/user')
-    @ApiOperation({ summary: 'Get all courses for authenticated users' })
-    @ApiResponse({ status: 200, description: 'List of all courses', type: [Course] })
-    async findAllForUser() {
-        const courses = await this.courseService.findAllForUser();
-        return { data: courses, message: 'Courses for user fetched successfully' };
-    }
-
-    @UseGuards(JwtAuthGuard)
-    @Get('user')
-    @ApiOperation({ summary: 'Get all courses created by a specific user' })
-    @ApiResponse({ status: 200, description: 'List of courses created by the user', type: [Course] })
-    async findAllByUser(@Request() req) {
-        const userId = req.user.userId;
-        const courses = await this.courseService.findAllByUser(userId);
-        return { data: courses, message: 'User courses fetched successfully' };
-    }
-
-    @UseGuards(JwtAuthGuard)
-    @Get(':courseId')
-    @ApiOperation({ summary: 'Get a course by ID for a specific user' })
-    @ApiParam({ name: 'courseId', description: 'ID of the course' })
-    @ApiResponse({ status: 200, description: 'Course details', type: Course })
-    async findOne(@Param('courseId', ParseIntPipe) courseId: string, @Request() req) {
-        const userId = req.user.userId;
-        const course = await this.courseService.findOne(courseId, userId);
-        return { data: course, message: 'Course details fetched successfully' };
-    }
+    // @Get('all/guest')
+    // @ApiOperation({ summary: 'Get all courses for guests' })
+    // @ApiResponse({ status: 200, description: 'List of all courses', type: [Course] })
+    // async findAll() {
+    //     const courses = await this.courseService.findAll();
+    //     return { data: courses, message: 'Courses fetched successfully' };
+    // }
 
     @UseGuards(JwtAuthGuard)
     @Post()
@@ -61,12 +31,43 @@ export class CourseController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Get('user/:userId')
+    @ApiOperation({ summary: 'Get all courses created by a specific user' })
+    @ApiResponse({ status: 200, description: 'List of courses created by the user', type: [Course] })
+    async findAllByUser(@Param('userId', ParseIntPipe) userId: number) {
+        const courses = await this.courseService.findAllByUser(userId);
+        return { data: courses, message: 'User courses fetched successfully' };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('all/user/:hubId')
+    @ApiOperation({ summary: 'Get all courses for authenticated users' })
+    @ApiParam({ name: 'hubId', description: 'ID of the hub' })
+    @ApiResponse({ status: 200, description: 'List of all courses for an authenticated user under a hub', type: [Course] })
+    async findAllForUser(@Param('hubId') hubId: string, @Request() req) {
+        const userId = req.user.userId;
+        const courses = await this.courseService.findAllForUser(hubId, userId);
+        return { data: courses, message: 'Courses for user under this hub fetched successfully' };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get(':courseId/:hubId')
+    @ApiOperation({ summary: 'Get a course by ID for a specific user' })
+    @ApiParam({ name: 'courseId', description: 'ID of the course' })
+    @ApiParam({ name: 'hubId', description: 'ID of the hub' })
+    @ApiResponse({ status: 200, description: 'Course details', type: Course })
+    async findOne(@Param('courseId') courseId: string, @Param('hubId') hubId: string) {
+        const course = await this.courseService.findOne(courseId, hubId);
+        return { data: course, message: 'Course details fetched successfully' };
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Patch(':courseId')
     @ApiOperation({ summary: 'Update a course' })
     @ApiParam({ name: 'courseId', description: 'ID of the course' })
     @ApiResponse({ status: 200, description: 'Course updated successfully', type: Course })
     async update(
-        @Param('courseId', ParseIntPipe) courseId: string,
+        @Param('courseId') courseId: string,
         @Body(ValidationPipe) courseDto: UpdateCourseDto
     ) {
         const updatedCourse = await this.courseService.update(courseId, courseDto);
@@ -74,12 +75,13 @@ export class CourseController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Delete(':courseId')
+    @Delete(':courseId/:hubId')
     @ApiOperation({ summary: 'Delete a course' })
     @ApiParam({ name: 'courseId', description: 'ID of the course' })
+    @ApiParam({ name: 'hubId', description: 'ID of the hub' })
     @ApiResponse({ status: 200, description: 'Course deleted successfully' })
-    async remove(@Param('courseId', ParseIntPipe) courseId: string) {
-        const deletedCourse = await this.courseService.remove(courseId);
+    async remove(@Param('courseId') courseId: string, @Param('hubId') hubId: string) {
+        const deletedCourse = await this.courseService.remove(courseId, hubId);
         return { data: deletedCourse };
     }
 }

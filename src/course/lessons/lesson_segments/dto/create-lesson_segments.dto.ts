@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsBoolean, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsBoolean, IsIn, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class CreateLessonSegmentsDto {
     @ApiProperty({ description: 'ID of the lesson this segment belongs to' })
@@ -17,6 +17,15 @@ export class CreateLessonSegmentsDto {
     @IsString()
     content: string;
 
+    @ApiProperty({ 
+        description: 'Type of the lesson content', 
+        enum: ['pdf', 'engagement', 'poll', 'video', 'text'] 
+    })
+    @IsNotEmpty()
+    @IsString()
+    @IsIn(['pdf', 'engagement', 'poll', 'video', 'text'])
+    contentType: string;
+
     @ApiProperty({ description: 'The description of the lesson segment' })
     @IsNotEmpty()
     @IsString()
@@ -27,15 +36,15 @@ export class CreateLessonSegmentsDto {
     @IsNumber()
     order: number;
 
-    @ApiPropertyOptional({ description: 'Optional field for a hub ID' })
-    @IsOptional()
-    @IsNumber()
-    hubId?: number;
+    // @ApiPropertyOptional({ description: 'Optional field for a hub ID' })
+    // @IsNotEmpty()
+    // @IsUUID()
+    // hubId: string;
 
     @ApiProperty({ description: 'Whether the segment is free or not' })
     @IsNotEmpty()
     @IsBoolean()
-    freeStatus: boolean;
+    status: boolean;
 
     @ApiProperty({ description: 'Whether the segment is previewable or not' })
     @IsNotEmpty()

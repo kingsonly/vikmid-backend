@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessonSegments } from './lesson_segments.entity/lesson_segments.entity';
 import { LessonsService } from '../lessons.service';
@@ -27,15 +27,10 @@ export class LessonSegmentsService {
         });
 
         if (lessonSegments.length === 0) {
-            throw new NotFoundException("There are no segments for this lesson");
+            throw new HttpException("There are no segments for this lesson", HttpStatus.NO_CONTENT);
         }
 
-        return lessonSegments.map(lessonSegment => {
-            return {
-                ...lessonSegment,
-                lessonId: lessonSegment.lesson.id, // Accessing the lesson ID directly
-            };
-        });
+        return lessonSegments;
     }
 
     async findOne(lesonId: string, lessonSegmentId: string): Promise<LessonSegments> {
@@ -45,7 +40,7 @@ export class LessonSegmentsService {
         });
 
         if (!lessonSegment) {
-            throw new NotFoundException("Lesson segment not found in this lesson");
+            throw new HttpException("Lesson segment not found in this lesson", HttpStatus.NO_CONTENT);
         }
 
         return lessonSegment;
@@ -58,7 +53,7 @@ export class LessonSegmentsService {
         });
 
         if (!lessonSegment) {
-            throw new NotFoundException("LessonSegment not found");
+            throw new HttpException("LessonSegment not found", HttpStatus.NO_CONTENT);
         }
 
         return lessonSegment;
@@ -68,66 +63,41 @@ export class LessonSegmentsService {
         // Fetch the lesson based on the provided lessonId
         const lesson = await this.lessonsService.findOneById(lessonSegmentDto.lessonId);
         if (!lesson) {
-            throw new NotFoundException('Lesson not found');
+            throw new HttpException('Lesson not found', HttpStatus.NO_CONTENT);
         }
-
-        // Check if a lesson with the same courseId and order already exists
-        const existingLessonSegment = await this.lessonSegmentsRepository.findOne({
-            where: { lesson: { id: lessonSegmentDto.lessonId }, order: lessonSegmentDto.order }
+    
+        // Count the number of existing lesson segments for this lesson
+        const totalSegments = await this.lessonSegmentsRepository.count({
+            where: { lesson: { id: lessonSegmentDto.lessonId } }
         });
-
-        if (existingLessonSegment) {
-            throw new NotFoundException('A lessonSegment with this lessonId and order already exists');
-        }
-
+    
+        // Assign the new order dynamically (last position)
+        const newOrder = totalSegments + 1;
+    
         // Create the lessonSegment entity and assign the lesson relationship
         const lessonSegment = this.lessonSegmentsRepository.create({ 
             ...lessonSegmentDto, 
-            lesson: lesson
+            lesson: lesson,
+            order: newOrder // Set the calculated order dynamically
         });
-
+    
         // Save the lesson using the repository instead of the entityManager
         const savedLessonSegment = await this.lessonSegmentsRepository.save(lessonSegment);
-
+    
         // Return the saved lesson with the lessonId included
-        return {
-            ...savedLessonSegment,
-            lessonId: savedLessonSegment.lesson.id     
-        } as LessonSegments;
+        return savedLessonSegment;
     }
 
     async update(lessonSegmentId: string, lessonSegmentDto: UpdateLessonSegmentsDto): Promise<LessonSegments> {
         // Find the existing lessonSegment by ID
         const lessonSegment = await this.lessonSegmentsRepository.findOne({ where: { id: lessonSegmentId }, relations: ['lesson'] });
         if (!lessonSegment) {
-            throw new NotFoundException('Lesson segment not found');
+            throw new HttpException('Lesson segment not found', HttpStatus.NO_CONTENT);
         }
 
         // Check if the lessonDto has a payload
         if (!lessonSegmentDto || !lessonSegmentDto.lessonId) {
             throw new BadRequestException('Invalid or missing payload data.');
-        }
-
-        const conflictingLessonSegment = await this.lessonSegmentsRepository.findOne({
-            where: {
-                lesson: { id: lessonSegmentDto.lessonId },
-                order: lessonSegmentDto.order,
-                id: Not(lessonSegmentId)
-            }
-        });
-
-        // Check if the updated order and courseId already exist for another lesson
-        if (conflictingLessonSegment) {
-            throw new NotFoundException('Another lessonSegment with this order already exists for this lesson');
-        }
-
-        // If the lessonId is provided and needs to be updated
-        if (lessonSegmentDto.lessonId) {
-            const lesson = await this.lessonsService.findOneById(lessonSegmentDto.lessonId);
-            if (!lesson) {
-                throw new NotFoundException('Lesson not found');
-            }
-            lessonSegment.lesson = lesson;
         }
 
         // Update only the provided fields
@@ -137,68 +107,49 @@ export class LessonSegmentsService {
         const updatedLessonSegment = await this.lessonSegmentsRepository.save(lessonSegment);
 
         // Return the updated lessonSegment with lessonId explicitly included
-        return {
-            ...updatedLessonSegment,
-            lessonId: updatedLessonSegment.lesson.id,
-        } as LessonSegments;
+        return updatedLessonSegment;
     }
 
     async remove(lessonSegmentId: string): Promise<any> {
         const lessonSegment = await this.lessonSegmentsRepository.findOne({ where: { id: lessonSegmentId } });
         const oldLessonSegment = lessonSegment;
         if (!lessonSegment) {
-            throw new NotFoundException('LessonSegment not found');
+            throw new HttpException('LessonSegment not found', HttpStatus.NO_CONTENT);
         }
 
         await this.lessonSegmentsRepository.delete(lessonSegmentId);
-        return {
-            message: "Course successfully deleted",
-            deletedSegment: oldLessonSegment,
-        }
+        return oldLessonSegment;
     }
 
-    async updateOrders(updateOrdersDto: { lessonSegmentId: string; lessonId: string; order: number }[]) {
-        const updatedSegments: LessonSegments[] = [];
-
-        for (const { lessonSegmentId, lessonId, order } of updateOrdersDto) {
+    async updateOrders(updateOrdersDto: { lessonSegmentId: string; lessonId: string }[]): Promise<LessonSegments[]> {
+        let counter = 1;
+    
+        for (const { lessonSegmentId, lessonId } of updateOrdersDto) {
             const lessonSegment = await this.lessonSegmentsRepository.findOne({
                 where: { id: lessonSegmentId }
             });
-
+    
             if (!lessonSegment) {
-                throw new NotFoundException(`Lesson segment with ID ${lessonSegmentId} not found`);
+                throw new HttpException(`Lesson segment with ID ${lessonSegmentId} not found`, HttpStatus.NO_CONTENT);
             }
-
+    
             // Validate if the lesson exists
             const lesson = await this.lessonsService.findOneById(lessonId);
             if (!lesson) {
-                throw new NotFoundException(`Lesson with ID ${lessonId} not found`);
+                throw new HttpException(`Lesson with ID ${lessonId} not found`, HttpStatus.NO_CONTENT);
             }
-
-            // // Check for conflicts with the same order and lessonId
-            // const conflictingSegment = await this.lessonSegmentsRepository.findOne({
-            //     where: {
-            //         lesson: { id: lessonId },
-            //         order: order,
-            //         id: Not(lessonSegmentId)
-            //     }
-            // });
-
-            // if (conflictingSegment) {
-            //     throw new ConflictException(`Conflict: Another segment already has order ${order} for lesson ID ${lessonId}`);
-            // }
-
-            // Update order and lesson ID
-            lessonSegment.order = order;
+    
+            lessonSegment.order = counter;
             lessonSegment.lesson = lesson;
-
-            // Save the updated segment and push it to the results array
-            const updatedSegment = await this.lessonSegmentsRepository.save(lessonSegment);
-            updatedSegments.push(updatedSegment);
+    
+            await this.lessonSegmentsRepository.save(lessonSegment);
+            counter++;
         }
-
-        return updatedSegments;
+    
+        // Fetch and return all lesson segments after updating
+        return this.lessonSegmentsRepository.find();
     }
+    
 
     findOneById(id: string): Promise<LessonSegments | undefined> {
         return this.lessonSegmentsRepository.findOne({

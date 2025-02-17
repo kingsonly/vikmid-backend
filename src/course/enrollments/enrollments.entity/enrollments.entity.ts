@@ -23,17 +23,17 @@ export class Enrollments {
     @CreateDateColumn({ type: 'timestamp' })
     enrollmentDate: Date;
 
-    @ApiProperty({ description: 'Status of the enrollment' })
-    @Column()
-    status: string;
+    @ApiProperty({ description: 'Status of the enrollment', example: true })
+    @Column({ default: false })
+    status: boolean;
 
     @ApiProperty({ description: 'Date when the enrollment was created' })
     @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date;
 
-    @ApiProperty({ description: 'Hub ID associated with the enrollment', required: false })
-    @Column({ nullable: true })
-    hubId: number;
+    // @ApiProperty({ description: 'Hub ID associated with the enrollment', required: false })
+    // @Column({ nullable: true })
+    // hubId: number;
 
     constructor(enrollments: Partial<Enrollments>) {
         Object.assign(this, enrollments)

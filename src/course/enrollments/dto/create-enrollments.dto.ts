@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsBoolean, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class CreateEnrollmentsDto {
     @ApiProperty({ description: 'ID of the student', example: 1 })
@@ -12,14 +12,13 @@ export class CreateEnrollmentsDto {
     @IsUUID()
     courseId: string;
 
-    @ApiProperty({ description: 'Enrollment status', example: 'active' })
-    @IsString()
-    @IsNotEmpty()
-    status: string;
+    @ApiProperty({ description: 'Enrollment status', example: true, required: true })
+    @IsBoolean()
+    status: boolean;
 
-    @ApiPropertyOptional({ description: 'ID of the hub (optional)', example: 5, required: false })
-    @IsOptional()
-    @IsInt()
-    hubId?: number;
+    // @ApiPropertyOptional({ description: 'ID of the hub (optional)', example: 5, required: false })
+    // @IsOptional()
+    // @IsInt()
+    // hubId?: number;
 
 }

@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { Enrollments } from './enrollments.entity/enrollments.entity';
 import { EntityManager, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -31,12 +31,10 @@ export class EnrollmentsService {
         });
 
         if (enrollments.length === 0) {
-            throw new NotFoundException('No enrollments found');
+            throw new HttpException("No enrollments found", HttpStatus.NO_CONTENT); // ✅ Returns 204 No Content
         }
 
-        return enrollments.map(enrollment => ({
-            ...enrollment,
-        }));
+        return enrollments;
     }
 
     async findAllByUser(userId: number) {
@@ -46,14 +44,10 @@ export class EnrollmentsService {
         });
 
         if (enrollments.length === 0) {
-            throw new NotFoundException('No enrollments found for this user');
+            throw new HttpException("No enrollments found for this user", HttpStatus.NO_CONTENT); // ✅ Returns 204 No Content
         }
 
-        return enrollments.map(enrollment => ({
-            ...enrollment,
-            studentId: enrollment.student.id,
-            courseId: enrollment.course.id,
-        }));
+        return enrollments;
     }
 
     async findAllByCourse(courseId: string) {
@@ -63,14 +57,10 @@ export class EnrollmentsService {
         })   
 
         if (enrollments.length === 0) {
-            throw new NotFoundException("No enrollments for this course");
+            throw new HttpException("No enrollments found for this course", HttpStatus.NO_CONTENT); // ✅ Returns 204 No Content
         }
 
-        return enrollments.map(enrollment => ({
-            ...enrollment,
-            studentId: enrollment.student.id,
-            courseId: enrollment.course.id,
-        }))
+        return enrollments;
     }
 
     async findOneByUser(enrollmentId: string, userId: number) {
@@ -78,29 +68,25 @@ export class EnrollmentsService {
             where: { id: enrollmentId, student: {id: userId} },
             relations: ['student', 'course'],  
         });
+
         if (!enrollment) {
-            throw new NotFoundException("Enrollment not found for this user");
+            throw new HttpException("Enrollment not found for this user", HttpStatus.NO_CONTENT);
         }
-        return {
-            ...enrollment,
-            studentId: enrollment.student.id,
-            courseId: enrollment.course.id,
-        };
-    }
+
+        return enrollment;
+    } 
 
     async findOneByCourse(courseId: string, enrollmentId: string) {
         const enrollment = await this.enrollmentsRepository.findOne({
             where: { id: enrollmentId, course: {id: courseId} },
             relations: ['student', 'course'],  
         });
+
         if (!enrollment) {
-            throw new NotFoundException("Enrollment not found for this Course");
+            throw new HttpException("Enrollment not found for this Course", HttpStatus.NO_CONTENT);
         }
-        return {
-            ...enrollment,
-            studentId: enrollment.student.id,
-            courseId: enrollment.course.id,
-        };
+
+        return enrollment;
     }
 
     async create(enrollmentDto: CreateEnrollmentsDto): Promise<Enrollments> {
@@ -121,12 +107,12 @@ export class EnrollmentsService {
         // Fetch the user based on the provided studentId
         const user = await this.userService.findOneById(enrollmentDto.studentId);
         if (!user) {
-            throw new NotFoundException('User not found');
+            throw new HttpException('User not found', HttpStatus.NO_CONTENT);
         }
 
         const course = await this.courseService.findOneById(enrollmentDto.courseId);
         if (!course) {
-            throw new NotFoundException('Course not found');
+            throw new HttpException('Course not found', HttpStatus.NO_CONTENT);
         }
 
         // Create the course entity and assign the creator relationship
@@ -140,11 +126,7 @@ export class EnrollmentsService {
         const savedEnrollment = await this.entityManager.save(enrollments);
 
         // Return the saved course with the creatorId included
-        return {
-            ...savedEnrollment,
-            studentId: savedEnrollment.student.id,
-            courseId: savedEnrollment.course.id,
-        } as Enrollments;
+        return savedEnrollment;
     }
 
     async update(enrollmentId: string, enrollmentDto: UpdateEnrollmentsDto): Promise<Enrollments> {
@@ -154,7 +136,7 @@ export class EnrollmentsService {
             relations: ['student', 'course'],
         });
         if (!enrollment) {
-            throw new NotFoundException('Enrollment not found');
+            throw new HttpException('Enrollment not found', HttpStatus.NO_CONTENT);
         }
 
         // Check for duplicate studentId and courseId during the update
@@ -177,7 +159,7 @@ export class EnrollmentsService {
         if (enrollmentDto.studentId) {
             const user = await this.userService.findOneById(enrollmentDto.studentId);
             if (!user) {
-                throw new NotFoundException('User not found');
+                throw new HttpException('User not found', HttpStatus.NO_CONTENT);
             }
             enrollment.student = user;
         }
@@ -186,7 +168,7 @@ export class EnrollmentsService {
         if (enrollmentDto.courseId) {
             const course = await this.courseService.findOneById(enrollmentDto.courseId);
             if (!course) {
-                throw new NotFoundException('Course not found');
+                throw new HttpException('Course not found', HttpStatus.NO_CONTENT);
             }
             enrollment.course = course;
         }
@@ -198,18 +180,14 @@ export class EnrollmentsService {
         const updatedEnrollment = await this.entityManager.save(enrollment);
 
         // Return the updated course with creatorId explicitly included
-        return {
-            ...updatedEnrollment,
-            studentId: updatedEnrollment.student.id,
-            courseId: updatedEnrollment.course.id,
-        } as Enrollments;
+        return updatedEnrollment;
     }
 
     async remove(enrollmentId: string): Promise<any> {
         const enrollment = await this.enrollmentsRepository.findOne({ where: { id: enrollmentId } });
         const oldEnrollment = enrollment;
         if (!enrollment) {
-            throw new NotFoundException('Enrollment not found');
+            throw new HttpException('Enrollment not found', HttpStatus.NO_CONTENT);
         }
 
         await this.enrollmentsRepository.delete(enrollmentId);

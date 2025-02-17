@@ -11,6 +11,8 @@ import { WaitlistModule } from './waitlist/waitlist.module';
 import { ValidatorModule } from './users/validator/validator.module';
 import { PaymentModule } from './payment/payment.module';
 import { CreatorsSubscriptionModule } from './creators-subscription/creators-subscription.module';
+import { CourseModule } from './course/course.module';
+import { LinkInBioModule } from './link-in-bio/link-in-bio.module';
 
 @Module({
   imports: [
@@ -21,12 +23,6 @@ import { CreatorsSubscriptionModule } from './creators-subscription/creators-sub
       isGlobal: true, // Makes the ConfigModule globally available
     }),
     TypeOrmModule.forRoot({
-      // type: 'mariadb', // or your chosen database
-      // host: 'localhost',
-      // port: 3308,
-      // username: 'forge',
-      // password: 'Ubuxa##99', 
-      // database: 'forge',
       type: 'mysql', // or your chosen database
       ...config.db,
       autoLoadEntities: true,
@@ -35,6 +31,8 @@ import { CreatorsSubscriptionModule } from './creators-subscription/creators-sub
     PlansModule,
     WaitlistModule,
     PaymentModule,
+    CourseModule,
+    LinkInBioModule,
     CreatorsSubscriptionModule,
   ],
   controllers: [AppController],

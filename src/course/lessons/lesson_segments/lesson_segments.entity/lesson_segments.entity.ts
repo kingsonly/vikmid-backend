@@ -21,6 +21,10 @@ export class LessonSegments {
     @Column('text')
     content: string;
 
+    @ApiProperty({ description: 'Type of the lesson content', enum: ['pdf', 'engagement', 'poll', 'video', 'text'] })
+    @Column({ type: 'enum', enum: ['pdf', 'engagement', 'poll', 'video', 'text'], default: 'text' })
+    contentType: string;
+
     @ApiProperty({ description: 'Description of the lesson segment', type: text })
     @Column('text')
     description: string;
@@ -37,13 +41,13 @@ export class LessonSegments {
     @UpdateDateColumn({ type: 'timestamp' })
     updatedAt: Date;
 
-    @ApiProperty({ description: 'Optional hub identifier' })
-    @Column({ nullable: true })
-    hubId: number;
+    @ApiProperty({ description: 'Optional hub identifier', example: "1jjheudfvw892829202bdjwjjw"})
+    @Column('text')
+    hubId: string;
 
     @ApiProperty({ description: 'Indicates if the lesson segment is free' })
     @Column()
-    freeStatus: boolean;
+    status: boolean;
 
     @ApiProperty({ description: 'Indicates if the lesson segment is previewable' })
     @Column()
