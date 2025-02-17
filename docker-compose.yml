@@ -6,9 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      # - 4020:4020
-      - 5000:4000
-    command: npm run start:dev
+      - 4020:4020
+      command: npm run start:dev
     volumes:
       # Re-use local composer cache via host-volume
       - .:/app
@@ -19,7 +18,6 @@ services:
       - vikmid-backend
     env_file:
       - .env
-
   # mongo:
   #   image: mongo:latest
   #   container_name: 'mongodb'
@@ -42,8 +40,6 @@ services:
       - MYSQL_DATABASE=forge
       - MYSQL_USER=forge
       - MYSQL_PASSWORD=Ubuxa##99
-    ports: 
-      - 3308:3306
     networks:
       - vikmid-backend
 
@@ -62,7 +58,6 @@ services:
       - ./:/app
     networks:
       - vikmid-backend
-
 networks:
   vikmid-backend:
     driver: bridge
