@@ -36,7 +36,7 @@ export class HubService {
         if (!hub) {
             throw new NotFoundException(`Hub with URL '${url}' not found.`);
         }
-        console.log("hub", url);
+
         return hub;
     }
 }
