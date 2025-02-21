@@ -6,7 +6,7 @@ import { JoinColumn, OneToOne, Entity, PrimaryGeneratedColumn, Column, ManyToOne
 @Entity('hubs')
 export class Hub {
     @PrimaryGeneratedColumn()
-    id: string;
+    id: number;
 
     @Column()
     userId: number;

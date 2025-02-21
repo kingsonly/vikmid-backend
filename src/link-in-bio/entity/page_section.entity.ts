@@ -16,6 +16,8 @@ export class PageSection {
 
     @Column({ default: true })
     status: boolean;
+    @Column()
+    order: number;
 
     @CreateDateColumn()
     createdAt: Date;

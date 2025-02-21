@@ -10,6 +10,7 @@ import { Links } from './entity/links.entity';
 import { LinkStats } from './entity/link-stats.entity';
 import { SocialLinkStats } from './entity/social-link-stats.entity';
 import { SocialLinks } from './entity/social-links.entity';
+import { StorageService } from 'config/storage.provider';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { SocialLinks } from './entity/social-links.entity';
 
       ])
   ],
-  providers: [LinkInBioService],
+  providers: [LinkInBioService, StorageService],
   controllers: [LinkInBioController]
 })
 export class LinkInBioModule { }
