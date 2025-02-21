@@ -11,6 +11,7 @@ import { LinkStats } from './entity/link-stats.entity';
 import { SocialLinkStats } from './entity/social-link-stats.entity';
 import { SocialLinks } from './entity/social-links.entity';
 import { StorageService } from 'config/storage.provider';
+import { HubModule } from 'src/hub/hub.module';
 
 @Module({
   imports: [
@@ -25,9 +26,10 @@ import { StorageService } from 'config/storage.provider';
         SocialLinkStats,
         SocialLinks
 
-      ])
+      ]),
+    HubModule
   ],
-  providers: [LinkInBioService, StorageService],
+  providers: [LinkInBioService, StorageService,],
   controllers: [LinkInBioController]
 })
 export class LinkInBioModule { }
