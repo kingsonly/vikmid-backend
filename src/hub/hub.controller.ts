@@ -3,7 +3,7 @@ import { HubService } from './hub.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 interface hubInterface {
-    id: string;
+    id: number;
     userId: number;
     title: string;
     hubUrl: string;

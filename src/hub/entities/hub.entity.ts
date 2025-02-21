@@ -1,11 +1,12 @@
+import { BioProfile } from 'src/link-in-bio/entity/bio-profile.entity';
 import { User } from 'src/users/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { JoinColumn, OneToOne, Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 
 @Entity('hubs')
 export class Hub {
     @PrimaryGeneratedColumn()
-    id: string;
+    id: number;
 
     @Column()
     userId: number;
@@ -24,4 +25,7 @@ export class Hub {
 
     @UpdateDateColumn()
     updatedAt: Date;
+
+    @OneToOne(() => BioProfile, (bioProfile) => bioProfile.hub, { cascade: true, onDelete: 'CASCADE' })
+    bioProfile: BioProfile;
 }
