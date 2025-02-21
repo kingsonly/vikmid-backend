@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards, Body, Put, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards, Body, Put, UseInterceptors, UploadedFiles, NotFoundException } from '@nestjs/common';
 import { LinkInBioService } from './link-in-bio.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ApiOperation, ApiResponse, ApiTags, ApiParam, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
@@ -6,9 +6,13 @@ import { UpdateBioProfileDto } from './dto/update-bio-profile.dto';
 import { BioProfile } from './entity/bio-profile.entity';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { StorageService } from 'config/storage.provider';
+import { HubService } from 'src/hub/hub.service';
 @Controller('link-in-bio')
 export class LinkInBioController {
-    constructor(private readonly bioProfileService: LinkInBioService, private readonly storageService: StorageService) { }
+    constructor(
+        private readonly bioProfileService: LinkInBioService,
+        private readonly hubService: HubService,
+        private readonly storageService: StorageService) { }
     @ApiTags('BioProfile')
     @ApiBearerAuth() // Indicates this route requires authentication
     @Get('init/:hubId')
@@ -59,5 +63,23 @@ export class LinkInBioController {
             }
         }
         return this.bioProfileService.updateBioProfile(id, updateBioProfileDto);
+    }
+
+    @Get('links/:url')
+    @ApiOperation({ summary: 'Get BioProfile by Hub URL' })
+    @ApiParam({
+        name: 'url',
+        required: true,
+        description: 'The URL of the hub associated with the BioProfile',
+        example: 'info.vikmid.com'
+    })
+    @ApiResponse({ status: 200, description: 'Returns the BioProfile with all relationships', type: BioProfile })
+    @ApiResponse({ status: 404, description: 'BioProfile not found' })
+    async getBioProfileWithRelationshipsWithHubUrl(@Param('url') url: string): Promise<BioProfile> {
+        let hub = await this.hubService.findByUrl(url)
+        if (!hub) {
+            throw new NotFoundException('BioProfile not found');
+        }
+        return await this.bioProfileService.getBioProfileWithRelationships(hub.id);
     }
 }

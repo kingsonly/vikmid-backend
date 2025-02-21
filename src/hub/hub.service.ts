@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Hub } from './entities/hub.entity';
@@ -25,5 +25,18 @@ export class HubService {
             {
                 where: { userId: creatorId, status: true }
             });
+    }
+
+    async findByUrl(url: string): Promise<Hub> {
+
+        const hub = await this.hubsRepository.findOne({
+            where: { hubUrl: url, status: true }
+        });
+
+        if (!hub) {
+            throw new NotFoundException(`Hub with URL '${url}' not found.`);
+        }
+        console.log("hub", url);
+        return hub;
     }
 }

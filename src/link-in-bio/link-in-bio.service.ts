@@ -36,17 +36,19 @@ export class LinkInBioService {
         await queryRunner.startTransaction();
 
         try {
-            let bioProfile = await queryRunner.manager.findOne(this.bioProfileRepository.target, {
-                where: { hubId },
-                relations: [
-                    'pages',
-                    'pages.sections',
-                    'pages.sections.links',
-                    'pages.sections.links.stats',
-                    'socialLinks',
-                    'socialLinks.stats',
-                ],
-            });
+            let bioProfile = await queryRunner.manager
+                .createQueryBuilder(BioProfile, 'bioProfile')
+                .leftJoinAndSelect('bioProfile.pages', 'pages')
+                .leftJoinAndSelect('pages.sections', 'sections')
+                .leftJoinAndSelect('sections.links', 'links')
+                .leftJoinAndSelect('links.stats', 'linkStats')
+                .leftJoinAndSelect('bioProfile.socialLinks', 'socialLinks')
+                .leftJoinAndSelect('socialLinks.stats', 'socialLinkStats')
+                .where('bioProfile.hubId = :hubId', { hubId })
+                .orderBy('sections.order', 'DESC')  // Order sections
+                .addOrderBy('links.order', 'DESC')  // Order links
+                .addOrderBy('socialLinks.order', 'DESC')  // Order social links
+                .getOne();
 
             if (bioProfile) {
                 await queryRunner.release();
@@ -190,6 +192,28 @@ export class LinkInBioService {
         if (!bioProfile) {
             throw new NotFoundException('BioProfile not found');
         }
+        return bioProfile;
+    }
+
+    async getBioProfileWithRelationships(id: number): Promise<BioProfile> {
+        const bioProfile = await this.bioProfileRepository
+            .createQueryBuilder('bioProfile')
+            .leftJoinAndSelect('bioProfile.pages', 'pages')
+            .leftJoinAndSelect('pages.sections', 'sections')
+            .leftJoinAndSelect('sections.links', 'links')
+            .leftJoinAndSelect('links.stats', 'linkStats')
+            .leftJoinAndSelect('bioProfile.socialLinks', 'socialLinks')
+            .leftJoinAndSelect('socialLinks.stats', 'socialLinkStats')
+            .orderBy('sections.order', 'DESC')
+            .addOrderBy('links.order', 'DESC')
+            .addOrderBy('socialLinks.order', 'DESC')
+            .where('bioProfile.hubId = :id', { id })
+            .getOne();
+
+        if (!bioProfile) {
+            throw new NotFoundException('BioProfile not found');
+        }
+
         return bioProfile;
     }
 }
