@@ -8,7 +8,7 @@ export class PageSection {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column()
+    @Column({ nullable: true })
     title: string;
 
     @Column()
@@ -29,6 +29,6 @@ export class PageSection {
     @JoinColumn({ name: 'pageId' })
     page: Page;
 
-    @OneToMany(() => Links, (links) => links.pageSection, { cascade: true })
+    @OneToMany(() => Links, (links) => links.pageSection, { cascade: ['remove'] })
     links: Links[]
 }

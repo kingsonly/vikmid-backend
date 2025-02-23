@@ -14,6 +14,10 @@ import { StorageService } from 'config/storage.provider';
 import { HubModule } from 'src/hub/hub.module';
 import { LinksController } from './links/links.controller';
 import { LinksService } from './links/links.service';
+import { PageSectionService } from './page-section/page-section.service';
+import { PageSectionController } from './page-section/page-section.controller';
+import { PagesService } from './pages/pages.service';
+import { PagesController } from './pages/pages.controller';
 
 @Module({
   imports: [
@@ -31,7 +35,7 @@ import { LinksService } from './links/links.service';
       ]),
     HubModule
   ],
-  providers: [LinkInBioService, StorageService, LinksService,],
-  controllers: [LinkInBioController, LinksController]
+  providers: [LinkInBioService, StorageService, PagesService, PageSectionService, LinksService,],
+  controllers: [LinkInBioController, PagesController, PageSectionController, LinksController]
 })
 export class LinkInBioModule { }
