@@ -12,6 +12,8 @@ import { SocialLinkStats } from './entity/social-link-stats.entity';
 import { SocialLinks } from './entity/social-links.entity';
 import { StorageService } from 'config/storage.provider';
 import { HubModule } from 'src/hub/hub.module';
+import { PageSectionService } from './page-section/page-section.service';
+import { PageSectionController } from './page-section/page-section.controller';
 
 @Module({
   imports: [
@@ -29,7 +31,7 @@ import { HubModule } from 'src/hub/hub.module';
       ]),
     HubModule
   ],
-  providers: [LinkInBioService, StorageService,],
-  controllers: [LinkInBioController]
+  providers: [LinkInBioService, StorageService, PageSectionService,],
+  controllers: [LinkInBioController, PageSectionController]
 })
 export class LinkInBioModule { }
