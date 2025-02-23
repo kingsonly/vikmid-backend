@@ -39,7 +39,7 @@ export class Links {
     @JoinColumn({ name: 'pageSectionId' })
     pageSection: PageSection
 
-    @OneToMany(() => LinkStats, (linkStats) => linkStats.link, { cascade: true }) // Relation to LinkStats
+    @OneToMany(() => LinkStats, (linkStats) => linkStats.link, { cascade: ['remove'] }) // Relation to LinkStats
     stats: LinkStats[];
 
 
