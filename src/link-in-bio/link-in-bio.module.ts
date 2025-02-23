@@ -18,6 +18,8 @@ import { PageSectionService } from './page-section/page-section.service';
 import { PageSectionController } from './page-section/page-section.controller';
 import { PagesService } from './pages/pages.service';
 import { PagesController } from './pages/pages.controller';
+import { SocialLinkController } from './social-link/social-link.controller';
+import { SocialLinkService } from './social-link/social-link.service';
 
 @Module({
   imports: [
@@ -35,7 +37,7 @@ import { PagesController } from './pages/pages.controller';
       ]),
     HubModule
   ],
-  providers: [LinkInBioService, StorageService, PagesService, PageSectionService, LinksService,],
-  controllers: [LinkInBioController, PagesController, PageSectionController, LinksController]
+  providers: [LinkInBioService, StorageService, PagesService, PageSectionService, LinksService, SocialLinkService,],
+  controllers: [LinkInBioController, PagesController, PageSectionController, LinksController, SocialLinkController]
 })
 export class LinkInBioModule { }
