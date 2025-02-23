@@ -45,9 +45,9 @@ export class LinkInBioService {
                 .leftJoinAndSelect('bioProfile.socialLinks', 'socialLinks')
                 .leftJoinAndSelect('socialLinks.stats', 'socialLinkStats')
                 .where('bioProfile.hubId = :hubId', { hubId })
-                .orderBy('sections.order', 'DESC')  // Order sections
-                .addOrderBy('links.order', 'DESC')  // Order links
-                .addOrderBy('socialLinks.order', 'DESC')  // Order social links
+                .orderBy('sections.order', 'ASC')  // Order sections
+                .addOrderBy('links.order', 'ASC')  // Order links
+                .addOrderBy('socialLinks.order', 'ASC')  // Order social links
                 .getOne();
 
             if (bioProfile) {
@@ -204,9 +204,9 @@ export class LinkInBioService {
             .leftJoinAndSelect('links.stats', 'linkStats')
             .leftJoinAndSelect('bioProfile.socialLinks', 'socialLinks')
             .leftJoinAndSelect('socialLinks.stats', 'socialLinkStats')
-            .orderBy('sections.order', 'DESC')
-            .addOrderBy('links.order', 'DESC')
-            .addOrderBy('socialLinks.order', 'DESC')
+            .orderBy('sections.order', 'ASC')
+            .addOrderBy('links.order', 'ASC')
+            .addOrderBy('socialLinks.order', 'ASC')
             .where('bioProfile.hubId = :id', { id })
             .getOne();
 
