@@ -26,6 +26,6 @@ export class Page {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @OneToMany(() => PageSection, (pageSection) => pageSection.page, { cascade: true })
+    @OneToMany(() => PageSection, (pageSection) => pageSection.page, { cascade: ['remove'] })
     sections: PageSection[];
 }
