@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     Body,
     Controller,
     Delete,
@@ -13,6 +14,7 @@ import { PagesService } from './pages.service';
 import { CreatePageDto } from './dto/creat-page.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Page } from '../entity/page.entity';
+import { reorderPageDto } from './dto/reorder-page.dto';
 
 
 @ApiTags('Pages') // Group in Swagger
@@ -89,6 +91,24 @@ export class PagesController {
         return {
             message: "Could not delete page",
             status: "error"
+        };
+    }
+
+    @Put("reorder")
+    @UseGuards(JwtAuthGuard)
+    @ApiOperation({ summary: 'Reorder pages' })
+    @ApiResponse({ status: 200, description: 'Order updated successfully' })
+    @ApiResponse({ status: 400, description: 'Invalid request' })
+    async reorderLinks(
+        @Body() pagesDto: reorderPageDto
+    ) {
+        let reorder = await this.pageService.reorderPages(pagesDto.pageIds)
+        if (!reorder) {
+            throw new BadRequestException('Something went wrong');
+        }
+        return {
+            message: "Order Updated",
+            status: "success"
         };
     }
 }

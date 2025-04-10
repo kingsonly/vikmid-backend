@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Page } from '../entity/page.entity';
 import { Repository } from 'typeorm';
@@ -16,7 +16,18 @@ export class PagesService {
      * @returns {Promise<Page>} - The newly created page.
      */
     async createPage(data: CreatePageDto): Promise<Page> {
-        const page = this.pageRepository.create(data);
+        //get last page 
+        const lastPage = await this.pageRepository.findOne({
+            where: { bioProfileId: data.bioProfileId },
+            order: { order: 'DESC' }, // Get the highest order
+        });
+        const newOrder = lastPage ? lastPage.order + 1 : 1;
+
+        const createPage = this.pageRepository.create({
+            ...data,
+            order: newOrder,
+        });
+        const page = this.pageRepository.create(createPage);
         return await this.pageRepository.save(page);
     }
 
@@ -66,8 +77,31 @@ export class PagesService {
      * @throws {NotFoundException} - If no pages are found.
      */
     async getPageByProfileId(id: string): Promise<Page[]> {
-        const page = await this.pageRepository.find({ where: { bioProfileId: id } });
+        const page = await this.pageRepository.find({ where: { bioProfileId: id }, order: { order: 'ASC' }, });
         if (!page) { throw new NotFoundException('Page not found'); }
         return page;
+    }
+
+    /**
+     * Reorders pages based on the provided array of page IDs.
+     * @param {string[]} pageIds - An array of page IDs in the desired order.
+     * @returns {Promise<boolean>} - Returns `true` if the reordering was successful.
+     * @throws {BadRequestException} - If the provided array is empty.
+     */
+    async reorderPages(pageIds: string[]): Promise<boolean> {
+        if (!pageIds || pageIds.length === 0) {
+            throw new BadRequestException('Page IDs array cannot be empty');
+        }
+
+        await this.pageRepository.manager.transaction(async (transactionalEntityManager) => {
+            for (let i = 0; i < pageIds.length; i++) {
+                await transactionalEntityManager.update(
+                    Page,
+                    { id: pageIds[i] },
+                    { order: i + 1 }
+                );
+            }
+        });
+        return true;
     }
 }
