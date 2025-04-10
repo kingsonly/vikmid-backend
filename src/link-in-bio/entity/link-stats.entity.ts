@@ -9,8 +9,15 @@ export class LinkStats {
     @Column()
     linkId: string;
 
-    @Column()
-    stats: string;
+    @Column('simple-json') // or 'text' if it's stored as stringified JSON
+    stats: {
+        referrer: string;
+        userAgent: string;
+        viewportWidth: number;
+        viewportHeight: number;
+        language: string;
+        platform: string;
+    };
 
     @CreateDateColumn()
     createdAt: Date;

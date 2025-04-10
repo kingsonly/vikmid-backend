@@ -39,13 +39,15 @@ export class LinkInBioService {
             let bioProfile = await queryRunner.manager
                 .createQueryBuilder(BioProfile, 'bioProfile')
                 .leftJoinAndSelect('bioProfile.pages', 'pages')
+                .leftJoinAndSelect('bioProfile.hub', 'hub')
                 .leftJoinAndSelect('pages.sections', 'sections')
                 .leftJoinAndSelect('sections.links', 'links')
                 .leftJoinAndSelect('links.stats', 'linkStats')
                 .leftJoinAndSelect('bioProfile.socialLinks', 'socialLinks')
                 .leftJoinAndSelect('socialLinks.stats', 'socialLinkStats')
                 .where('bioProfile.hubId = :hubId', { hubId })
-                .orderBy('sections.order', 'ASC')  // Order sections
+                .orderBy('pages.order', 'ASC')  // Order sections
+                .addOrderBy('sections.order', 'ASC')  // Order sections
                 .addOrderBy('links.order', 'ASC')  // Order links
                 .addOrderBy('socialLinks.order', 'ASC')  // Order social links
                 .getOne();
@@ -187,6 +189,7 @@ export class LinkInBioService {
         Object.assign(bioProfile, updateBioProfileDto);
         return await this.bioProfileRepository.save(bioProfile);
     }
+
     async getBioProfileById(id: string,): Promise<BioProfile> {
         const bioProfile = await this.bioProfileRepository.findOne({ where: { id } });
         if (!bioProfile) {
@@ -204,7 +207,8 @@ export class LinkInBioService {
             .leftJoinAndSelect('links.stats', 'linkStats')
             .leftJoinAndSelect('bioProfile.socialLinks', 'socialLinks')
             .leftJoinAndSelect('socialLinks.stats', 'socialLinkStats')
-            .orderBy('sections.order', 'ASC')
+            .orderBy('pages.order', 'ASC')
+            .addOrderBy('sections.order', 'ASC')
             .addOrderBy('links.order', 'ASC')
             .addOrderBy('socialLinks.order', 'ASC')
             .where('bioProfile.hubId = :id', { id })
@@ -216,4 +220,27 @@ export class LinkInBioService {
 
         return bioProfile;
     }
+
+    // async getBioProfileWithRelationships(id: number): Promise<BioProfile> {
+    //     const bioProfile = await this.bioProfileRepository
+    //         .createQueryBuilder('bioProfile')
+    //         .leftJoinAndSelect('bioProfile.pages', 'pages')
+    //         .leftJoinAndSelect('pages.sections', 'sections')
+    //         .leftJoinAndSelect('sections.links', 'links')
+    //         .leftJoinAndSelect('links.stats', 'linkStats')
+    //         .leftJoinAndSelect('bioProfile.socialLinks', 'socialLinks')
+    //         .leftJoinAndSelect('socialLinks.stats', 'socialLinkStats')
+    //         .orderBy('pages.order', 'ASC')
+    //         .addOrderBy('sections.order', 'ASC')
+    //         .addOrderBy('links.order', 'ASC')
+    //         .addOrderBy('socialLinks.order', 'ASC')
+    //         .where('bioProfile.hubId = :id', { id })
+    //         .getOne();
+
+    //     if (!bioProfile) {
+    //         throw new NotFoundException('BioProfile not found');
+    //     }
+
+    //     return bioProfile;
+    // }
 }

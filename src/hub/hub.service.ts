@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Hub } from './entities/hub.entity';
+import { UpdateHubDto } from './dto/update-hub.dto';
 
 
 @Injectable()
@@ -38,5 +39,25 @@ export class HubService {
         }
 
         return hub;
+    }
+
+    async getHubById(id: number): Promise<Hub> {
+
+        const hub = await this.hubsRepository.findOne({
+            where: { id: id, status: true }
+        });
+
+        if (!hub) {
+            throw new NotFoundException(`Hub with URL '${id}' not found.`);
+        }
+
+        return hub;
+    }
+    async updateHub(id: number, hubDto: Partial<UpdateHubDto>): Promise<Hub> {
+
+        const hub = await this.getHubById(id);
+        if (!hub) { throw new NotFoundException('Page not found'); }
+        Object.assign(hub, hubDto);
+        return await this.hubsRepository.save(hub);
     }
 }

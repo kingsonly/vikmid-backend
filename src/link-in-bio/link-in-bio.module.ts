@@ -20,6 +20,9 @@ import { PagesService } from './pages/pages.service';
 import { PagesController } from './pages/pages.controller';
 import { SocialLinkController } from './social-link/social-link.controller';
 import { SocialLinkService } from './social-link/social-link.service';
+import { LinkStatsModule } from './link-stats/link-stats.module';
+import { SocialLinkStatsService } from './social-link-stats/social-link-stats.service';
+import { SocialLinkStatsModule } from './social-link-stats/social-link-stats.module';
 
 @Module({
   imports: [
@@ -35,9 +38,11 @@ import { SocialLinkService } from './social-link/social-link.service';
         SocialLinks
 
       ]),
-    HubModule
+    HubModule,
+    LinkStatsModule,
+    SocialLinkStatsModule
   ],
-  providers: [LinkInBioService, StorageService, PagesService, PageSectionService, LinksService, SocialLinkService,],
+  providers: [LinkInBioService, StorageService, PagesService, PageSectionService, LinksService, SocialLinkService, SocialLinkStatsService,],
   controllers: [LinkInBioController, PagesController, PageSectionController, LinksController, SocialLinkController]
 })
 export class LinkInBioModule { }

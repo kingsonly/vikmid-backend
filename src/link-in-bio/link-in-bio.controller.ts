@@ -49,7 +49,10 @@ export class LinkInBioController {
             if (storage) {
                 updateBioProfileDto.profilePicture = storage.url;
                 //delete previous file
-                await this.storageService.deleteFile(bioProfile.profilePicture);
+                if (bioProfile.profilePicture.length > 0) {
+                    await this.storageService.deleteFile(bioProfile.profilePicture);
+                }
+
             }
         }
 
@@ -58,7 +61,10 @@ export class LinkInBioController {
             if (storage) {
                 updateBioProfileDto.banner = storage.url;
                 //delete previous file
-                await this.storageService.deleteFile(bioProfile.banner);
+                if (bioProfile.banner.length > 0) {
+                    await this.storageService.deleteFile(bioProfile.banner);
+                }
+
 
             }
         }

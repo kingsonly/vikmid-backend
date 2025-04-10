@@ -21,7 +21,7 @@ import { PlansModule } from 'src/plans/plans.module';
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'secretKey',
-      signOptions: { expiresIn: '1h' },
+      signOptions: {},//expiresIn: '1h'
     }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
