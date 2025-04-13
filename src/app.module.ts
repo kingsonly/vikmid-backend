@@ -11,6 +11,7 @@ import { WaitlistModule } from './waitlist/waitlist.module';
 import { ValidatorModule } from './users/validator/validator.module';
 import { PaymentModule } from './payment/payment.module';
 import { CreatorsSubscriptionModule } from './creators-subscription/creators-subscription.module';
+import { CourseModule } from './course/course.module';
 import { LinkInBioModule } from './link-in-bio/link-in-bio.module';
 
 
@@ -31,8 +32,9 @@ import { LinkInBioModule } from './link-in-bio/link-in-bio.module';
     PlansModule,
     WaitlistModule,
     PaymentModule,
-    CreatorsSubscriptionModule,
+    CourseModule,
     LinkInBioModule,
+    CreatorsSubscriptionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
