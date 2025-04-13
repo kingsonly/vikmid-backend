@@ -1,9 +1,10 @@
-import { Body, Post, Controller, Get, UseGuards, Request } from '@nestjs/common';
+import { Body, Post, Controller, Get, UseGuards, Request, Put, Param } from '@nestjs/common';
 import { HubService } from './hub.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { UpdateHubDto } from './dto/update-hub.dto';
 
 interface hubInterface {
-    id: string;
+    id: number;
     userId: number;
     title: string;
     hubUrl: string;
@@ -26,8 +27,18 @@ export class HubController {
         //return hubs;
     }
     @Post('create')
+    @UseGuards(JwtAuthGuard)
     async create(@Body() hubDto: any) {
         return;
+    }
+
+    @Put('update/:id')
+    @UseGuards(JwtAuthGuard)
+    async update(
+        @Param('id') id: number,
+        @Body() updateHubDto: UpdateHubDto
+    ) {
+        return this.hubService.updateHub(id, updateHubDto)
     }
 
 }
