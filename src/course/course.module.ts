@@ -9,6 +9,7 @@ import { EnrollmentsModule } from './enrollments/enrollments.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { Lessons } from './lessons/lessons.entity/lessons.entity';
 import { EnrollmentsService } from './enrollments/enrollments.service';
+import { StorageService } from 'config/storage.provider';
 
 @Module({
   imports: [
@@ -18,8 +19,8 @@ import { EnrollmentsService } from './enrollments/enrollments.service';
     LessonsModule,
     EnrollmentsModule
   ],
-  providers: [CourseService, EnrollmentsService],
+  providers: [CourseService, EnrollmentsService, StorageService],
   controllers: [CourseController],
-  exports: [CourseService, TypeOrmModule],
+  exports: [CourseService, TypeOrmModule, StorageService],
 })
-export class CourseModule {}
+export class CourseModule { }

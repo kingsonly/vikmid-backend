@@ -7,6 +7,7 @@ import { UsersService } from 'src/users/users.service';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { Lessons } from './lessons/lessons.entity/lessons.entity';
 import { Enrollments } from './enrollments/enrollments.entity/enrollments.entity';
+import { paginate, PaginateQuery } from 'nestjs-paginate';
 
 @Injectable()
 export class CourseService {
@@ -27,7 +28,7 @@ export class CourseService {
 
         // The user service
         private readonly userService: UsersService,
-    ) {}
+    ) { }
 
     // async findAll() {
     //     const courses = await this.courseRepository.find({
@@ -47,9 +48,9 @@ export class CourseService {
     //     });
     // }
 
-    async findAllForUser(hubId: string, userId: number) {
+    async findAllForUser(hubId: number, userId: number) {
         const courses = await this.courseRepository.find({
-            where: {hubId: hubId, creator: {id: userId}},
+            where: { hubId: hubId, creator: { id: userId } },
             relations: ['creator', 'lessons', 'enrollments'],
         });
 
@@ -58,12 +59,32 @@ export class CourseService {
         }
 
         // Check if creator is being fetched correctly
+        return courses;
+    }
+
+    async findAllHubCourse(query: PaginateQuery, hubId: number) {
+        const courses = await paginate(query, this.courseRepository, {
+            sortableColumns: ['id', 'createdAt'],
+            defaultSortBy: [['createdAt', 'DESC']],
+            where: { hubId: hubId, },
+            relations: ['creator', 'lessons', 'lessons.lessonSegments']
+
+        })
+        // const courses = await this.courseRepository.find({
+        //     where: { hubId: hubId, },
+        //     relations: ['creator', 'lessons', 'lessons.lessonSegments'],
+        // });
+
+        // if (courses.length === 0) {
+        //     throw new HttpException("There are no courses for this hub", HttpStatus.NO_CONTENT);
+        // }
+
         return courses;
     }
 
     async findAllByUser(userId: number) {
         const courses = await this.courseRepository.find({
-            where: {creator: {id: userId}},
+            where: { creator: { id: userId } },
             relations: ['creator', 'lessons', 'enrollments'],
         });
 
@@ -75,42 +96,43 @@ export class CourseService {
         return courses;
     }
 
-    async findOne(courseId: string, hubId: string) {
+    async findOne(courseId: string, hubId: number) {
         const course = await this.courseRepository.findOne({
             where: { id: courseId, hubId },
-            relations: ['creator', 'lessons', 'enrollments'],  
+            relations: ['creator', 'lessons', 'lessons.lessonSegments', 'enrollments'],
         });
         if (!course) {
             throw new HttpException("Course not found for this user", HttpStatus.NO_CONTENT);
         }
-        
+
         return course;
     }
 
     async create(courseDto: CreateCourseDto): Promise<Course> {
         // Fetch the user based on the provided creatorId
+        console.log("to see dto", courseDto)
         const user = await this.userService.findOneById(courseDto.creatorId);
         if (!user) {
             throw new HttpException('User not found', HttpStatus.NO_CONTENT);
         }
 
         // Create the course entity and assign the creator relationship
-        const course = this.courseRepository.create({ 
-            ...courseDto, 
-            creator: user 
+        const course = this.courseRepository.create({
+            ...courseDto,
+            creator: user
         });
 
         // Save the course using the repository instead of the entityManager
-        const savedCourse = await this.entityManager.save(course);
+        return await this.entityManager.save(course);
 
-        // Return the saved course with the creatorId included
-        return savedCourse;
+
+
     }
 
     async findAnyOne(courseId: string): Promise<Course> {
         const course = await this.courseRepository.findOne({
             where: { id: courseId },
-            relations: ['creator', 'lessons', 'enrollments'],  
+            relations: ['creator', 'lessons', 'enrollments'],
         });
         if (!course) {
             throw new HttpException("Course not found", HttpStatus.NO_CONTENT);
@@ -119,23 +141,14 @@ export class CourseService {
     }
 
     async update(courseId: string, courseDto: UpdateCourseDto): Promise<Course> {
-        if (!courseDto || !courseDto.creatorId) {
+        if (!courseDto) {
             throw new ConflictException("Invalid or missing payload data")
         }
 
         // Find the existing course by ID
-        const course = await this.courseRepository.findOne({ where: { id: courseId, creator: {id: courseDto.creatorId} }, relations: ['creator', 'lessons', 'enrollments'] });
+        const course = await this.courseRepository.findOne({ where: { id: courseId, creator: { id: courseDto.creatorId } }, relations: ['creator', 'lessons', 'enrollments'] });
         if (!course) {
             throw new HttpException('Course not found', HttpStatus.NO_CONTENT);
-        }
-
-        // If the creatorId is provided and needs to be updated
-        if (courseDto.creatorId) {
-            const user = await this.userService.findOneById(courseDto.creatorId);
-            if (!user) {
-                throw new HttpException('User not found', HttpStatus.NO_CONTENT);
-            }
-            course.creator = user;
         }
 
         // Update only the provided fields
@@ -148,23 +161,23 @@ export class CourseService {
         return updatedCourse;
     }
 
-    async remove(courseId: string, hubId: string): Promise<any> {
+    async remove(courseId: string, hubId: number): Promise<any> {
         const course = await this.courseRepository.findOne({ where: { id: courseId, hubId } });
         if (!course) {
             throw new HttpException('Course not found', HttpStatus.NO_CONTENT);
         }
-        
+
         const oldCourse = course;
 
         // Delete all related lesson segments
-        if (course.lessons.length > 0) {
-            await this.lessonRepository.remove(course.lessons);
-        }
+        // if (course.lessons.length > 0) {
+        //     await this.lessonRepository.remove(course.lessons);
+        // }
 
-        // Delete all related lesson segments
-        if (course.enrollments.length > 0) {
-            await this.enrollmentRepository.remove(course.enrollments);
-        }
+        // // Delete all related lesson segments
+        // if (course.enrollments.length > 0) {
+        //     await this.enrollmentRepository.remove(course.enrollments);
+        // }
 
         await this.courseRepository.delete(courseId);
         return {

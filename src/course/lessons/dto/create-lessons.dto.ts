@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { Type } from "class-transformer";
 import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class CreateLessonsDto {
@@ -17,13 +18,9 @@ export class CreateLessonsDto {
     @IsString()
     content: string;
 
-    @ApiProperty({ description: 'Order of the lesson in the course' })
-    @IsNotEmpty()
-    @IsNumber()
-    order: number;
-
     @ApiProperty({ description: 'Optional hub ID related to the lesson', required: false })
     @IsNotEmpty()
-    @IsUUID()
-    hubId: string;
+    @IsNumber()
+    @Type(() => Number)
+    hubId: number;
 }

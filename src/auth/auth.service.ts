@@ -55,6 +55,7 @@ export class AuthService {
         const payload = { email: user.email, sub: user.id };
         let token = this.jwtService.sign(payload);
         let data: any = {
+            id: user.id,
             email: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
@@ -83,6 +84,7 @@ export class AuthService {
         }
 
         let userDetails: usersInterface = {
+
             email: data.email,
             password: hashedPassword,
             planId: data.plan,
@@ -92,7 +94,7 @@ export class AuthService {
             isActive: isActive,
 
         }
- 
+
         let user = await this.usersService.create(userDetails);
         if (user) {
             let hubDetails: hubInterface = {
