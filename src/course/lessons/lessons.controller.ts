@@ -11,7 +11,7 @@ import { Lessons } from './lessons.entity/lessons.entity';
 export class LessonsController {
     constructor(
         private readonly lessonsService: LessonsService,
-    ) {}
+    ) { }
 
     @UseGuards(JwtAuthGuard)
     @Get(':courseId')
@@ -26,10 +26,10 @@ export class LessonsController {
     @Get('lesson/:lessonId')
     @ApiOperation({ summary: 'Retrieve a single lesson.' })
     @ApiParam({ name: 'lessonId', required: true })
-    @ApiResponse({ status: 200, description: 'Retrieve a single lesson.', type: Lessons})
+    @ApiResponse({ status: 200, description: 'Retrieve a single lesson.', type: Lessons })
     async findAnyOne(@Param('lessonId') lessonId: string) {
         return this.lessonsService.findAnyOne(lessonId);
-    }    
+    }
 
     @UseGuards(JwtAuthGuard)
     @Get(':courseId/:lessonId')
@@ -59,7 +59,7 @@ export class LessonsController {
     @ApiBody({ description: 'Update lesson orders', type: [UpdateLessonsDto] })
     @ApiResponse({ status: 200, description: 'Lessons order updated successfully.', type: Lessons })
     async updateOrders(
-        @Body() updateLessonsDto: { lessonId: string; courseId: string; order: number }[], 
+        @Body() updateLessonsDto: { lessonId: string; courseId: string; order: number }[],
     ) {
         return this.lessonsService.updateOrders(updateLessonsDto);
     }
@@ -75,15 +75,12 @@ export class LessonsController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Delete(':lessonId')
+    @Delete('/delete/:lessonId')
     @ApiParam({ name: 'lessonId', required: true })
     @ApiOperation({ summary: 'Delete a lesson.' })
     @ApiResponse({ status: 200, description: 'Lesson deleted successfully.' })
     async remove(@Param('lessonId') lessonId: string) {
-        const lesson = this.lessonsService.remove(lessonId);
-        return {
-            message: "Course successfully deleted",
-            deletedCourse: lesson,
-        }
+        return await this.lessonsService.remove(lessonId);
+
     }
 }

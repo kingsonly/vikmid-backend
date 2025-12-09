@@ -24,11 +24,11 @@ export class LessonsService {
 
         // The course service
         private readonly courseService: CourseService,
-    ) {}
+    ) { }
 
     async findAll(courseId: string): Promise<any> {
         const lessons = await this.lessonRepository.find({
-            where: {course: {id: courseId}},
+            where: { course: { id: courseId } },
             relations: ['course', 'lessonSegments'],
         });
 
@@ -42,7 +42,7 @@ export class LessonsService {
 
     async findOne(courseId: string, lessonId: string): Promise<Lessons> {
         const lesson = await this.lessonRepository.findOne({
-            where: {id: lessonId, course: {id: courseId}},
+            where: { id: lessonId, course: { id: courseId } },
             relations: ['course', 'lessonSegments'],
         });
 
@@ -55,7 +55,7 @@ export class LessonsService {
 
     async findAnyOne(lessonId: string): Promise<Lessons> {
         const lesson = await this.lessonRepository.findOne({
-            where: {id: lessonId},
+            where: { id: lessonId },
             relations: ['course', 'lessonSegments'],
         });
 
@@ -72,27 +72,29 @@ export class LessonsService {
         if (!course) {
             throw new HttpException('Course not found', HttpStatus.NO_CONTENT);
         }
-    
-        // Count the number of existing lessons for this course
-        const totalLessons = await this.lessonRepository.count({
-            where: { course: { id: lessonDto.courseId } }
+
+        const totalLessons = await this.lessonRepository.findOne({
+            where: { course: { id: lessonDto.courseId } },
+            order: { order: 'DESC' }, // Get the highest order
         });
-    
-        // Assign the new order dynamically (last position)
-        const newOrder = totalLessons + 1;
-    
+
+        const newOrder = totalLessons ? totalLessons.order + 1 : 1;
+
         // Create the lesson entity and assign the course relationship
         const lesson = this.lessonRepository.create({
             ...lessonDto,
             course: course,
             order: newOrder // Set the calculated order dynamically
         });
-    
+
         // Save the lesson using the repository
         const savedLesson = await this.lessonRepository.save(lesson);
-    
+        const cleanLesson = await this.lessonRepository.findOne({
+            where: { id: savedLesson.id },
+            relations: ['lessonSegments']
+        });
         // Return the saved lesson
-        return savedLesson;
+        return cleanLesson;
     }
 
     async update(lessonId: string, lessonDto: UpdateLessonsDto): Promise<Lessons> {
@@ -118,16 +120,17 @@ export class LessonsService {
     }
 
     async remove(lessonId: string): Promise<any> {
-        const lesson = await this.lessonRepository.findOne({ where: { id: lessonId } });
+        const lesson = await this.lessonRepository.findOne({ where: { id: lessonId }, relations: ["lessonSegments"] });
         const oldLesson = lesson;
         if (!lesson) {
             throw new HttpException('Lesson not found', HttpStatus.NO_CONTENT);
         }
 
         // Delete all related lesson segments
-        if (lesson.lessonSegments.length > 0) {
-            await this.lessonSegmentRepository.remove(lesson.lessonSegments);
-        }
+        //this should be done on the database level
+        // if (lesson.lessonSegments.length > 0) {
+        //     await this.lessonSegmentRepository.remove(lesson.lessonSegments);
+        // }
 
         await this.lessonRepository.delete(lessonId);
         return oldLesson;
@@ -141,32 +144,32 @@ export class LessonsService {
 
     async updateOrders(updateLessonsDto: { lessonId: string; courseId: string }[]): Promise<Lessons[]> {
         let counter = 1;
-    
+
         for (const { lessonId, courseId } of updateLessonsDto) {
             // Fetch the existing lesson by ID and courseId
             const lesson = await this.lessonRepository.findOne({
                 where: { id: lessonId, course: { id: courseId } },
                 relations: ['course', 'lessonSegments'],
             });
-    
+
             if (!lesson) {
                 throw new HttpException(`Lesson with ID ${lessonId} not found in course ${courseId}`, HttpStatus.NO_CONTENT);
             }
-    
+
             // Fetch the course to ensure it's valid
             const course = await this.courseService.findOneById(courseId);
             if (!course) {
                 throw new HttpException(`Course with ID ${courseId} not found`, HttpStatus.NO_CONTENT);
             }
-    
+
             // Update the lesson order dynamically
             lesson.order = counter;
             lesson.course = course;
-    
+
             await this.lessonRepository.save(lesson);
             counter++;
         }
-    
+
         // Fetch and return all lessons after updating
         return this.lessonRepository.find({ relations: ['course', 'lessonSegments'] });
     }

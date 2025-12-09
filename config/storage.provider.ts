@@ -49,7 +49,11 @@ export class StorageService {
         if (this.provider === 'cloudinary') {
             return new Promise((resolve, reject) => {
                 const uploadStream = cloudinary.uploader.upload_stream(
-                    { folder },
+                    {
+                        folder,
+                        resource_type: "auto"
+
+                    },
                     (error, result) => {
                         if (error) reject(error);
                         else resolve(result);

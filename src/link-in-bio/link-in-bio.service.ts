@@ -115,69 +115,6 @@ export class LinkInBioService {
         }
     }
 
-    // async getOrCreateBioProfile(hubId: number) {
-    //     let bioProfile = await this.bioProfileRepository.findOne({
-    //         where: { hubId },
-    //         relations: [
-    //             'pages',
-    //             'pages.sections',
-    //             'pages.sections.links',
-    //             'pages.sections.links.stats',
-    //             'socialLinks',
-    //             'socialLinks.stats',
-    //         ],
-    //     });
-
-    //     // If bioProfile exists, return it
-    //     if (bioProfile) return bioProfile;
-
-    //     // Otherwise, create a new one
-    //     bioProfile = this.bioProfileRepository.create({
-    //         hubId,
-    //         displayName: null,
-    //         profilePicture: null,
-    //         banner: null,
-    //         template: 1,
-    //         themeColors: JSON.stringify({
-    //             "name": "Modern Dark",
-    //             "background": "#111827",
-    //             "text": "#F3F4F6",
-    //             "accent": "#8B5CF6"
-    //         }),
-    //         status: true,
-    //     });
-
-    //     await this.bioProfileRepository.save(bioProfile);
-
-    //     // Create a default page
-    //     const defaultPage = this.pageRepository.create({
-    //         name: 'home',
-    //         bioProfile,
-    //         status: true,
-    //     });
-    //     await this.pageRepository.save(defaultPage);
-
-    //     // Create a default page section
-    //     const defaultPageSection = this.pageSectionRepository.create({
-    //         page: defaultPage,
-    //         title: 'default',
-    //         order: 1,
-    //         status: true,
-    //     });
-    //     await this.pageSectionRepository.save(defaultPageSection);
-
-    //     return this.bioProfileRepository.findOne({
-    //         where: { id: bioProfile.id },
-    //         relations: [
-    //             'pages',
-    //             'pages.sections',
-    //             'pages.sections.links',
-    //             'pages.sections.links.stats',
-    //             'socialLinks',
-    //             'socialLinks.stats',
-    //         ],
-    //     });
-    // }
 
     async updateBioProfile(id: string, updateBioProfileDto: UpdateBioProfileDto): Promise<BioProfile> {
         const bioProfile = await this.bioProfileRepository.findOne({ where: { id } });

@@ -34,9 +34,9 @@ export class Lessons {
     @UpdateDateColumn({ type: 'timestamp' })
     updatedAt: Date;
 
-    @ApiProperty({ description: 'Hub identifier for the lesson.', example: "1jjheudfvw892829202bdjwjjw"})
-    @Column('text')
-    hubId: string;
+    @ApiProperty({ description: 'ID of the hub related to the lesson', example: "1jjheudfvw892829202bdjwjjw" })
+    @Column()
+    hubId: number;
 
     @ApiProperty({ description: 'Segments associated with this lesson.', type: () => [LessonSegments] })
     // @OneToMany(() => LessonSegments, (lesson_segment) => lesson_segment.lesson)
